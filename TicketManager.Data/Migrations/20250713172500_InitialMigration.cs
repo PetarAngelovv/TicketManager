@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace TicketManager.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDb : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -176,7 +178,7 @@ namespace TicketManager.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -186,7 +188,7 @@ namespace TicketManager.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,8 +198,11 @@ namespace TicketManager.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TicketPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TotalTickets = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -207,8 +212,7 @@ namespace TicketManager.Data.Migrations
                         name: "FK_Events_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -217,8 +221,8 @@ namespace TicketManager.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsSold = table.Column<bool>(type: "bit", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    IsSold = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     EventId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -254,6 +258,33 @@ namespace TicketManager.Data.Migrations
                         principalTable: "Tickets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "df1c3a0f-1234-4cde-bb55-d5f15a6aabcd", 0, "899ee380-9f38-46a9-afff-eb5c296b9ab7", "admin@TManager.com", true, false, null, "ADMIN@TMANAGER.COM", "ADMIN@TMANAGER.COM", "AQAAAAIAAYagAAAAEH+Ef2rumjI34HsuKKVace542bzsBAvjqDUPLYrr7Fhvzyqkti6ZR2OBcczjU0INAQ==", null, false, "fbd3dc8c-1ab8-4188-9a6f-370146f13274", false, "admin@TManager.com" });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Concert" },
+                    { 2, "Sports" },
+                    { 3, "Theatre" },
+                    { 4, "Conference" },
+                    { 5, "Festival" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Events",
+                columns: new[] { "Id", "CategoryId", "Date", "Description", "IsDeleted", "Name", "TicketPrice", "TotalTickets" },
+                values: new object[,]
+                {
+                    { 1, 1, new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "An outdoor music festival with top artists and bands.", false, "Summer Music Festival", 50.00m, 1000 },
+                    { 2, 2, new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Annual city marathon open for all participants.", false, "City Marathon", 30.00m, 500 },
+                    { 3, 4, new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Latest trends and talks in technology and innovation.", false, "Tech Conference 2025", 120.00m, 300 }
                 });
 
             migrationBuilder.CreateIndex(

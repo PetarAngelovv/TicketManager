@@ -15,7 +15,20 @@
 
             public const int LocationMinLength = 3;
             public const int LocationMaxLength = 100;
+
+            public const int DescriptionMinLength = 10;
+            public const int DescriptionMaxLength = 1000;
+
+            public const double MinPrice = 0.01;
+            public const double MaxPrice = 1000.00;
+
+            public const int MaxTickets = 10000;
+            public const int MinTickets = 1;
+
+            public const string CreatedOnFormat = "yyyy-MM-dd";
+            public const int CreatedOnLength = 10;
         }
+    }
 
         public static class Ticket
         {
@@ -33,4 +46,3 @@
             public const string RequiredErrorMessage = "Полето е задължително.";
         }
     }
-}

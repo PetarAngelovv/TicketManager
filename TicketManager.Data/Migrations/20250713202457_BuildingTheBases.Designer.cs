@@ -12,8 +12,8 @@ using TicketManager.Data;
 namespace TicketManager.Data.Migrations
 {
     [DbContext(typeof(TicketManagerDbContext))]
-    [Migration("20250710154455_InitialDb")]
-    partial class InitialDb
+    [Migration("20250713202457_BuildingTheBases")]
+    partial class BuildingTheBases
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,33 @@ namespace TicketManager.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Concert"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Sports"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Theatre"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Conference"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Festival"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -158,6 +185,24 @@ namespace TicketManager.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "df1c3a0f-1234-4cde-bb55-d5f15a6aabcd",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c991b2cf-52ab-4bfa-8397-7f9339b23e1e",
+                            Email = "admin@TManager.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@TMANAGER.COM",
+                            NormalizedUserName = "ADMIN@TMANAGER.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE5GtKNqHHCAQovic7jVju2C3RirZjGN5TVVcYognsHcxPkQd4ntVngOtcpp0HYY4w==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "5e092e9b-3a87-4a1d-b1db-1d1430dc0d5b",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@TManager.com"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -253,27 +298,84 @@ namespace TicketManager.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Location")
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("TicketPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TotalTickets")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AuthorId = "cb79d2b9-3231-408b-83d3-30c6879aa313",
+                            CategoryId = 1,
+                            CreatedOn = new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "An outdoor music festival with top artists and bands.",
+                            IsDeleted = false,
+                            Name = "Summer Music Festival",
+                            TicketPrice = 50.00m,
+                            TotalTickets = 1000
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AuthorId = "929dbb49-522c-4f84-a486-5d11e35fd7fc",
+                            CategoryId = 2,
+                            CreatedOn = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Annual city marathon open for all participants.",
+                            IsDeleted = false,
+                            Name = "City Marathon",
+                            TicketPrice = 30.00m,
+                            TotalTickets = 500
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AuthorId = "1d48e3d2-08e1-4162-8c51-65f0723a017f",
+                            CategoryId = 4,
+                            CreatedOn = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Latest trends and talks in technology and innovation.",
+                            IsDeleted = false,
+                            Name = "Tech Conference 2025",
+                            TicketPrice = 120.00m,
+                            TotalTickets = 300
+                        });
                 });
 
             modelBuilder.Entity("TicketManager.Data.Models.Order", b =>
@@ -285,7 +387,9 @@ namespace TicketManager.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -325,9 +429,12 @@ namespace TicketManager.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsSold")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -335,6 +442,21 @@ namespace TicketManager.Data.Migrations
                     b.HasIndex("EventId");
 
                     b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("TicketManager.Data.Models.UserEvent", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "EventId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("UsersEvents");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -390,11 +512,19 @@ namespace TicketManager.Data.Migrations
 
             modelBuilder.Entity("TicketManager.Data.Models.Event", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Category", "Category")
                         .WithMany("Events")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Author");
 
                     b.Navigation("Category");
                 });
@@ -404,7 +534,7 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -440,6 +570,25 @@ namespace TicketManager.Data.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("TicketManager.Data.Models.UserEvent", b =>
+                {
+                    b.HasOne("TicketManager.Data.Models.Event", "Event")
+                        .WithMany("UsersEvents")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Category", b =>
                 {
                     b.Navigation("Events");
@@ -448,6 +597,8 @@ namespace TicketManager.Data.Migrations
             modelBuilder.Entity("TicketManager.Data.Models.Event", b =>
                 {
                     b.Navigation("Tickets");
+
+                    b.Navigation("UsersEvents");
                 });
 
             modelBuilder.Entity("TicketManager.Data.Models.Order", b =>

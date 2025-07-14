@@ -20,8 +20,4 @@
     <ProjectReference Include="..\TicketManager.GCommon\TicketManager.GCommon.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configurations\" />
-  </ItemGroup>
-
 </Project>

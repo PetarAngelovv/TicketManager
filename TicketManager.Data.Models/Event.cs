@@ -1,33 +1,24 @@
-﻿using GCommon;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static GCommon.GlobalValidation.Event;
+﻿
+using Microsoft.AspNetCore.Identity;
 
 namespace TicketManager.Data.Models
 {
-    public class Event
+    public class Event 
     {
         public int Id { get; set; }
-
-        [Required]
-        [StringLength(NameMaxLength, MinimumLength = NameMinLength)]
         public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public decimal TicketPrice { get; set; }
+        public int TotalTickets { get; set; }
+        public string? ImageUrl { get; set; }
+        public string AuthorId { get; set; } = null!;
+        public virtual IdentityUser Author { get; set; } = null!;
+        public virtual DateTime CreatedOn { get; set; }
 
-        [Required]
-        [StringLength(LocationMaxLength, MinimumLength = LocationMinLength)]
-        public string Location { get; set; } = null!;
-
-        [Required]
-        public virtual DateTime StartTime { get; set; }
-
+        public bool IsDeleted { get; set; } = false;
+        public virtual IEnumerable<Ticket> Tickets { get; set; } = new HashSet<Ticket>();
+        public virtual ICollection<UserEvent> UsersEvents { get; set; } = new HashSet<UserEvent>();
         public int CategoryId { get; set; }
-
         public virtual Category Category { get; set; } = null!;
-
-        public virtual ICollection<Ticket> Tickets { get; set; } = new HashSet<Ticket>();
     }
 }

@@ -1,60 +1,370 @@
-﻿@using TicketManager.Web.ViewModels.Event;
-@model IEnumerable<EventIndexViewModel>;
-@{
-    ViewData["Title"] = "All Events";
+﻿@{
+    ViewData["Title"] = "EventHub - Premium Event Ticketing";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
-    <h2>@ViewData["Title"]</h2>
-    @if (User?.Identity?.IsAuthenticated == true)
-    {
-        <a asp-controller="Event" asp-action="Create" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add Event
-        </a>
-    }
-</div>
-<hr />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="~/css/eventhub.css" rel="stylesheet">
+</head>
+<body>
+    <div class="elegant-app">
+        <!-- Floating Elements -->
+        <div class="floating-elements">
+            <div class="floating-element" style="left: 10%; animation-delay: 0s;">🎵</div>
+            <div class="floating-element" style="left: 20%; animation-delay: 1s;">🏆</div>
+            <div class="floating-element" style="left: 30%; animation-delay: 2s;">🎭</div>
+            <div class="floating-element" style="left: 40%; animation-delay: 3s;">💼</div>
+            <div class="floating-element" style="left: 50%; animation-delay: 4s;">🎉</div>
+            <div class="floating-element" style="left: 60%; animation-delay: 0.5s;">🎪</div>
+            <div class="floating-element" style="left: 70%; animation-delay: 1.5s;">🎨</div>
+            <div class="floating-element" style="left: 80%; animation-delay: 2.5s;">⭐</div>
+            <div class="floating-element" style="left: 90%; animation-delay: 3.5s;">🎵</div>
+        </div>
 
-<div class="row text-center">
-    @foreach (EventIndexViewModel _event in Model)
-    {
-        <div class="col-md-3 mb-4">
-            <div class="card h-100" style="width: 100%;">
-                @if (!string.IsNullOrEmpty(_event.ImageUrl))
-                {
-                    <img src="@_event.ImageUrl" class="card-img-top" style="max-height: 150px; object-fit: contain;" alt="@_event.Name">
-                }
-                else
-                {
-                    <img src="~/images/default-image.jpg" class="card-img-top" style="max-height: 150px; object-fit: contain;" alt="No Image Available">
-                }
-
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">@_event.Name</h5>
-                    <p class="card-text">Category: @_event.CategoryName</p>
-                    <p class="card-text"><small>Favorites: @_event.SavedCount</small></p>
-                    <div class="d-flex justify-content-between mt-auto">
-                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
-                        {
-                            <a asp-controller="Event" asp-action="Details" asp-route-id="@_event.Id" class="btn btn-info me-2 w-50">
-                                <i class="fas fa-info-circle"></i> Details
-                            </a>
-                            <form asp-controller="Event" asp-action="Save" method="post" class="w-50">
-                                <input type="hidden" name="id" value="@_event.Id" />
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i class="fas fa-heart"></i> Favorites
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a asp-controller="Event" asp-action="Details" asp-route-id="@_event.Id" class="btn btn-info w-100">
-                                <i class="fas fa-info-circle"></i> Details
-                            </a>
-                        }
+        <!-- Header -->
+        <header class="elegant-header">
+            <div class="header-overlay">
+                <div class="container">
+                    <div class="header-content text-center text-white">
+                        <div class="logo-section d-flex align-items-center justify-content-center mb-4">
+                            <i class="fas fa-star logo-icon me-3"></i>
+                            <h1 class="elegant-title mb-0">EventHub</h1>
+                            <i class="fas fa-bolt logo-icon pulse-icon ms-3"></i>
+                        </div>
+                        <p class="elegant-subtitle mb-4">Premium events for the modern generation</p>
+                        <div class="header-stats d-flex justify-content-center flex-wrap gap-4">
+                            <div class="stat-item">
+                                <span class="stat-number d-block">100K+</span>
+                                <span class="stat-label">Events Hosted</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number d-block">500K+</span>
+                                <span class="stat-label">Happy Customers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number d-block">50+</span>
+                                <span class="stat-label">Cities</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="elegant-content">
+            <div class="container">
+                <!-- Content Header -->
+                <div class="content-header d-flex justify-content-between align-items-end mb-5">
+                    <div class="header-text">
+                        <h2 class="section-title mb-2">Featured Events</h2>
+                        <p class="section-subtitle mb-0">Discover amazing experiences across all categories</p>
+                    </div>
+                </div>
+
+                <!-- Events Grid -->
+                <div class="row events-grid" id="eventsGrid">
+                    <!-- Event Card 1 -->
+                    <div class="col-lg-4 col-md-6 mb-4 event-card" data-category="Festival">
+                        <div class="elegant-card">
+                            <div class="card-badge" style="background: var(--accent-slate);">
+                                <i class="fas fa-glass-cheers category-icon me-2"></i>
+                                <span>Festival</span>
+                            </div>
+                            <div class="card-image-container">
+                                <img src="https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=400"
+                                     alt="Summer Music Festival 2024" class="card-image">
+                                <div class="image-overlay">
+                                    <i class="fas fa-info-circle overlay-icon mb-2"></i>
+                                    <span class="overlay-text">View Details</span>
+                                </div>
+                                <div class="price-tag">
+                                    <span class="price-currency">$</span>
+                                    <span class="price-amount">89</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Summer Music Festival 2024</h3>
+                                <div class="card-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt detail-icon me-2"></i>
+                                        <span>Central Park, NYC</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar detail-icon me-2"></i>
+                                        <span>Jul 15, 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-users detail-icon me-2"></i>
+                                        <span><span class="saved-count">2847</span> interested</span>
+                                    </div>
+                                </div>
+                                <div class="card-actions d-flex gap-2">
+                                    <button class="btn elegant-btn elegant-btn-primary purchase-btn flex-fill">
+                                        <i class="fas fa-shopping-cart btn-icon me-2"></i>
+                                        Purchase
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-secondary">
+                                        <i class="fas fa-info-circle btn-icon me-2"></i>
+                                        Details
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-favorite favorite-btn" data-event-id="1">
+                                        <i class="fas fa-heart btn-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Card 2 -->
+                    <div class="col-lg-4 col-md-6 mb-4 event-card" data-category="Theatre">
+                        <div class="elegant-card">
+                            <div class="card-badge" style="background: var(--accent-teal);">
+                                <i class="fas fa-theater-masks category-icon me-2"></i>
+                                <span>Theatre</span>
+                            </div>
+                            <div class="card-image-container">
+                                <img src="https://images.pexels.com/photos/109669/pexels-photo-109669.jpeg?auto=compress&cs=tinysrgb&w=400"
+                                     alt="The Lion King Broadway" class="card-image">
+                                <div class="image-overlay">
+                                    <i class="fas fa-info-circle overlay-icon mb-2"></i>
+                                    <span class="overlay-text">View Details</span>
+                                </div>
+                                <div class="price-tag">
+                                    <span class="price-currency">$</span>
+                                    <span class="price-amount">125</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">The Lion King Broadway</h3>
+                                <div class="card-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt detail-icon me-2"></i>
+                                        <span>Broadway Theatre</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar detail-icon me-2"></i>
+                                        <span>Aug 20, 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-users detail-icon me-2"></i>
+                                        <span><span class="saved-count">1456</span> interested</span>
+                                    </div>
+                                </div>
+                                <div class="card-actions d-flex gap-2">
+                                    <button class="btn elegant-btn elegant-btn-primary purchase-btn flex-fill">
+                                        <i class="fas fa-shopping-cart btn-icon me-2"></i>
+                                        Purchase
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-secondary">
+                                        <i class="fas fa-info-circle btn-icon me-2"></i>
+                                        Details
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-favorite favorite-btn favorited" data-event-id="2">
+                                        <i class="fas fa-heart btn-icon filled"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Card 3 -->
+                    <div class="col-lg-4 col-md-6 mb-4 event-card" data-category="Sports">
+                        <div class="elegant-card">
+                            <div class="card-badge" style="background: var(--accent-amber);">
+                                <i class="fas fa-trophy category-icon me-2"></i>
+                                <span>Sports</span>
+                            </div>
+                            <div class="card-image-container">
+                                <img src="https://images.pexels.com/photos/358042/pexels-photo-358042.jpeg?auto=compress&cs=tinysrgb&w=400"
+                                     alt="NBA Finals Game 7" class="card-image">
+                                <div class="image-overlay">
+                                    <i class="fas fa-info-circle overlay-icon mb-2"></i>
+                                    <span class="overlay-text">View Details</span>
+                                </div>
+                                <div class="price-tag">
+                                    <span class="price-currency">$</span>
+                                    <span class="price-amount">299</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">NBA Finals Game 7</h3>
+                                <div class="card-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt detail-icon me-2"></i>
+                                        <span>Madison Square Garden</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar detail-icon me-2"></i>
+                                        <span>Jun 18, 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-users detail-icon me-2"></i>
+                                        <span><span class="saved-count">3921</span> interested</span>
+                                    </div>
+                                </div>
+                                <div class="card-actions d-flex gap-2">
+                                    <button class="btn elegant-btn elegant-btn-primary purchase-btn flex-fill">
+                                        <i class="fas fa-shopping-cart btn-icon me-2"></i>
+                                        Purchase
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-secondary">
+                                        <i class="fas fa-info-circle btn-icon me-2"></i>
+                                        Details
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-favorite favorite-btn" data-event-id="3">
+                                        <i class="fas fa-heart btn-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Event Cards (initially hidden) -->
+                    <div class="col-lg-4 col-md-6 mb-4 event-card d-none" data-category="Concert">
+                        <div class="elegant-card">
+                            <div class="card-badge" style="background: var(--accent-blue);">
+                                <i class="fas fa-music category-icon me-2"></i>
+                                <span>Concert</span>
+                            </div>
+                            <div class="card-image-container">
+                                <img src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=400"
+                                     alt="Taylor Swift - Eras Tour" class="card-image">
+                                <div class="image-overlay">
+                                    <i class="fas fa-info-circle overlay-icon mb-2"></i>
+                                    <span class="overlay-text">View Details</span>
+                                </div>
+                                <div class="price-tag">
+                                    <span class="price-currency">$</span>
+                                    <span class="price-amount">199</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Taylor Swift - Eras Tour</h3>
+                                <div class="card-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt detail-icon me-2"></i>
+                                        <span>MetLife Stadium</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar detail-icon me-2"></i>
+                                        <span>Sep 12, 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-users detail-icon me-2"></i>
+                                        <span><span class="saved-count">5634</span> interested</span>
+                                    </div>
+                                </div>
+                                <div class="card-actions d-flex gap-2">
+                                    <button class="btn elegant-btn elegant-btn-primary purchase-btn flex-fill">
+                                        <i class="fas fa-shopping-cart btn-icon me-2"></i>
+                                        Purchase
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-secondary">
+                                        <i class="fas fa-info-circle btn-icon me-2"></i>
+                                        Details
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-favorite favorite-btn" data-event-id="4">
+                                        <i class="fas fa-heart btn-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional hidden events... -->
+                    <div class="col-lg-4 col-md-6 mb-4 event-card d-none" data-category="Conference">
+                        <div class="elegant-card">
+                            <div class="card-badge" style="background: var(--accent-blue);">
+                                <i class="fas fa-briefcase category-icon me-2"></i>
+                                <span>Conference</span>
+                            </div>
+                            <div class="card-image-container">
+                                <img src="https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&w=400"
+                                     alt="Tech Innovation Summit" class="card-image">
+                                <div class="image-overlay">
+                                    <i class="fas fa-info-circle overlay-icon mb-2"></i>
+                                    <span class="overlay-text">View Details</span>
+                                </div>
+                                <div class="price-tag">
+                                    <span class="price-currency">$</span>
+                                    <span class="price-amount">149</span>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Tech Innovation Summit</h3>
+                                <div class="card-details">
+                                    <div class="detail-item">
+                                        <i class="fas fa-map-marker-alt detail-icon me-2"></i>
+                                        <span>Convention Center</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-calendar detail-icon me-2"></i>
+                                        <span>Oct 5, 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="fas fa-users detail-icon me-2"></i>
+                                        <span><span class="saved-count">892</span> interested</span>
+                                    </div>
+                                </div>
+                                <div class="card-actions d-flex gap-2">
+                                    <button class="btn elegant-btn elegant-btn-primary purchase-btn flex-fill">
+                                        <i class="fas fa-shopping-cart btn-icon me-2"></i>
+                                        Purchase
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-secondary">
+                                        <i class="fas fa-info-circle btn-icon me-2"></i>
+                                        Details
+                                    </button>
+                                    <button class="btn elegant-btn elegant-btn-favorite favorite-btn" data-event-id="5">
+                                        <i class="fas fa-heart btn-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Show More/Less Button -->
+                <div class="text-center mb-5">
+                    <button id="showMoreBtn" class="btn elegant-btn elegant-btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        <i class="fas fa-star btn-icon me-2"></i>
+                        Show All Events (8)
+                    </button>
+                    <button id="showLessBtn" class="btn elegant-btn elegant-btn-secondary d-none" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        <i class="fas fa-star btn-icon me-2"></i>
+                        Show Less
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="elegant-footer">
+            <div class="container">
+                <div class="footer-content d-flex justify-content-between align-items-center">
+                    <div class="footer-section">
+                        <h4>Your Favorites</h4>
+                        <p id="favoritesText">You have 1 favorite event saved</p>
+                    </div>
+                    <div class="footer-cta">
+                        <button id="favoritesBtn" class="btn elegant-btn elegant-btn-primary">
+                            <i class="fas fa-heart btn-icon me-2"></i>
+                            View Favorites
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/eventhub.js"></script>
+</body>
+</html>

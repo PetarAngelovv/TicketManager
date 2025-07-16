@@ -303,4 +303,26 @@ public class EventService : IEventService
 
         return opResult;
     }//DONE
+
+    public async Task<IEnumerable<EventIndexViewModel>> GetAllByCreatorAsync(string? userId)
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Enumerable.Empty<EventIndexViewModel>();
+        }
+
+        return await _context.Events
+            .Where(e => e.AuthorId == userId && !e.IsDeleted)
+            .Select(e => new EventIndexViewModel
+            {
+                Id = e.Id,
+                Name = e.Name,
+                ImageUrl = e.ImageUrl,
+                IsAuthor = true,
+                CategoryName = e.Category.Name,
+                SavedCount = 0
+            })
+            .ToListAsync();
+    }
+
 }

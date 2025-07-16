@@ -1,0 +1,47 @@
+﻿@model IEnumerable<TicketManager.Web.ViewModels.User.UserViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h2>User Management</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Manager</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@(user.IsManager ? "Yes" : "No")</td>
+                <td>
+                    @if (!user.IsManager)
+                    {
+                        <form asp-area="Admin" asp-controller="Admin" asp-action="AddManagerRole" method="post">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button type="submit" class="btn btn-success">Make Manager</button>
+                        </form>
+
+                    }
+                    else
+                    {
+                        <form asp-area="Admin" asp-controller="Admin" asp-action="RemoveManagerRole" method="post">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button type="submit" class="btn btn-danger">Remove Manager</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+     
+
+    </tbody>
+
+    <a asp-area="Admin" asp-controller="Event" asp-action="Index" class="btn btn-primary mb-3">Начална страница</a>
+</table>

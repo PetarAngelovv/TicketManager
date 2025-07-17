@@ -1,0 +1,61 @@
+﻿@using TicketManager.Web.ViewModels.Event;
+@model EventDetailsViewModel;
+
+@{
+    ViewData["Title"] = "Event Details (Manager)";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
+    <h2>@ViewData["Title"]</h2>
+</div>
+<hr />
+
+<div class="row justify-content-center" style="margin: 0 auto; max-width: 800px;">
+    <div class="col-md-4 text-center">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="img-fluid" style="max-width: 100%; height: auto;" alt="@Model.Name" />
+        }
+        else
+        {
+            <img src="~/images/default-image.jpg" class="img-fluid" style="max-width: 100%; height: auto;" alt="No Image Available" />
+        }
+    </div>
+
+    <div class="col-md-8">
+        <div class="card-body">
+            <h5 class="card-title">@Model.Name</h5>
+            <hr />
+            <p class="card-text">@Model.Description</p>
+            <hr />
+            <p class="card-text"><strong>Category:</strong> @Model.CategoryName</p>
+            <p class="card-text"><strong>Created On:</strong> @Model.CreatedOn</p>
+            <p class="card-text"><strong>Author:</strong> @Model.Author</p>
+            <hr /><div class="mb-2">
+                <strong>Ticket Price:</strong>
+                <span>@Model.TicketPrice.ToString("F2") лв.</span>
+            </div>
+
+            <div class="mb-2">
+                <strong>Total Tickets:</strong>
+                <span>@Model.TotalTickets</span>
+            </div>
+
+        </div>
+        <div class="card-footer text-center">
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="button" class="btn btn-secondary d-flex justify-content-center align-items-center flex-fill mx-1" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+
+                <a asp-area="Manager" asp-controller="MyEvent" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary flex-fill mx-1">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+
+                <a asp-area="Manager" asp-controller="MyEvent" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger flex-fill mx-1">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

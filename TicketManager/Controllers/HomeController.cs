@@ -1,29 +1,46 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using TicketManager.Models;
 using TicketManager.Web.Controllers;
-
+using static GCommon.GlobalValidation;
 namespace TicketManager.Controllers
 {
     public class HomeController : BaseController
     {
-        [HttpGet]
-            public IActionResult Index()
-            {
-                if (User.Identity?.IsAuthenticated == true)
-                {
-                    if (User.IsInRole("Admin"))
-                    {
-                        return RedirectToAction("Index", "Event", new { area = "Admin" });
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Event");
-                    }
-                }
+        private readonly UserManager<IdentityUser> _userManager;
 
-                return View();
+        public HomeController(UserManager<IdentityUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return RedirectToAction("Index", "Event", new { area = "Admin" });
+                }
+                else if (await _userManager.IsInRoleAsync(user, "Manager"))
+                {
+                    return RedirectToAction("Index", "MyEvent", new { area = "Manager" });
+
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Event");
+                }
+                 
             }
+            return View();
+        }
+
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

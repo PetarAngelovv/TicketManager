@@ -45,7 +45,6 @@ namespace TicketManager.Web.Areas.Identity.Pages.Account
             [Display(Name = "Remember me?")]
             public bool RememberMe { get; set; }
         }
-
         public async Task OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
@@ -62,7 +61,6 @@ namespace TicketManager.Web.Areas.Identity.Pages.Account
 
             ReturnUrl = returnUrl;
         }
-
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -75,16 +73,26 @@ namespace TicketManager.Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
-
                     var user = await _userManager.FindByEmailAsync(Input.Email);
 
-                    if (user != null && await _userManager.IsInRoleAsync(user, "Admin"))
+                    if (user != null)
                     {
-                        return LocalRedirect("/Admin/Event");
+                        if (await _userManager.IsInRoleAsync(user, "Admin"))
+                        {
+                            return LocalRedirect(Url.Content("~/Admin/Event"));
+                        }
+                        else if (await _userManager.IsInRoleAsync(user, "Manager"))
+                        {
+                            return LocalRedirect(Url.Content("~/Manager/MyEvent"));
+                        }
+                        else
+                        {
+                            return LocalRedirect(Url.Content("~/Event"));
+                        }
                     }
 
-                    return LocalRedirect("/Event");
+                    // За други роли
+                    return LocalRedirect(Url.Content("~/"));
                 }
 
                 if (result.RequiresTwoFactor)
@@ -94,16 +102,14 @@ namespace TicketManager.Web.Areas.Identity.Pages.Account
 
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning("User account locked out.");
                     return RedirectToPage("./Lockout");
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return Page();
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
+
     }
 }

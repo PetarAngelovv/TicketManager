@@ -28,17 +28,15 @@
             public const string CreatedOnFormat = "yyyy-MM-dd";
             public const int CreatedOnLength = 10;
         }
-    }
-
+        public static class RoleConstants
+        {
+            public const string Admin = "Admin";
+            public const string Manager = "Manager";
+        }
         public static class Ticket
         {
             public const decimal MinPrice = 1.00m;
             public const decimal MaxPrice = 1000.00m;
-        }
-
-        public static class Order
-        {
-            // Ако решa да валидираме нещо конкретно в поръчките (напр. UserId), тук ще го добавим
         }
 
         public static class General
@@ -46,3 +44,4 @@
             public const string RequiredErrorMessage = "Полето е задължително.";
         }
     }
+}

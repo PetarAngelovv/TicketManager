@@ -29,8 +29,8 @@ namespace TicketManager.Web.Controllers
             try
             {
                 string userId = this.GetUserId();
-                IEnumerable<EventIndexViewModel> allRecipes = await this._EventService.GetAllAsync(userId);
-                return this.View(allRecipes);
+                IEnumerable<EventIndexViewModel> allEvents = await this._EventService.GetAllAsync(userId);
+                return this.View(allEvents.ToList());
             }
             catch (Exception ex)
             {
@@ -46,12 +46,12 @@ namespace TicketManager.Web.Controllers
             try
             {
                 string? userId = this.GetUserId();
-                EventDetailsViewModel recipeDetails = await this._EventService.GetEventDetailsAsync(userId, id);
-                if (recipeDetails == null)
+                EventDetailsViewModel eventDetails = await this._EventService.GetEventDetailsAsync(userId, id);
+                if (eventDetails == null)
                 {
                     return this.RedirectToAction(nameof(Index));
                 }
-                return this.View(recipeDetails);
+                return this.View(eventDetails);
             }
             catch (Exception ex)
             {

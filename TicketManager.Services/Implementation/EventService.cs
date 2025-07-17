@@ -112,26 +112,32 @@ public class EventService : IEventService
 
         if (id != null)
         {
-            Event? DeleteEventModel = await _context
+            Event? deleteEventModel = await _context
                 .Events
                 .Include(r => r.Author)
                  .Include(r => r.Category)
                .AsNoTracking()
                .SingleOrDefaultAsync(r => r.Id == id);
 
-            if (DeleteEventModel != null && DeleteEventModel.AuthorId.ToLower() == userId.ToLower())
+            if (deleteEventModel != null && userId != null)
             {
-                deleteModel = new EventDeleteInputModel()
+                IdentityUser? user = await _userManager.FindByIdAsync(userId);
+                bool isAdmin = user != null && await _userManager.IsInRoleAsync(user, "Admin");
+
+                if (isAdmin || deleteEventModel.AuthorId.ToLower() == userId.ToLower())
                 {
-                    Id = DeleteEventModel.Id,
-                    Name = DeleteEventModel.Name,
-                    Description = DeleteEventModel.Description,
-                    CategoryName = DeleteEventModel.Category.Name,
-                    TicketPrice = DeleteEventModel.TicketPrice,
-                    TotalTickets = DeleteEventModel.TotalTickets,
-                    Author = DeleteEventModel.Author.UserName,
-                    AuthorId = DeleteEventModel.AuthorId
-                };
+                    deleteModel = new EventDeleteInputModel()
+                    {
+                        Id = deleteEventModel.Id,
+                        Name = deleteEventModel.Name,
+                        Description = deleteEventModel.Description,
+                        CategoryName = deleteEventModel.Category.Name,
+                        TicketPrice = deleteEventModel.TicketPrice,
+                        TotalTickets = deleteEventModel.TotalTickets,
+                        Author = deleteEventModel.Author.UserName,
+                        AuthorId = deleteEventModel.AuthorId
+                    };
+                }
             }
         }
         return deleteModel;
@@ -143,16 +149,19 @@ public class EventService : IEventService
         bool opResult = false;
 
         IdentityUser? user = await this._userManager.FindByIdAsync(userId);
+        Event? _event = await _context.Events.FindAsync(inputModel.Id);
 
-        Event? _event = await _context
-            .Events.FindAsync(inputModel.Id);
-
-        if (user != null && _event != null && _event.AuthorId.ToLower() == userId.ToLower())
+        if (user != null && _event != null)
         {
-            _event.IsDeleted = true;
+            bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
-            await this._context.SaveChangesAsync();
-            opResult = true;
+            // Ако не е админ, трябва да е автор на събитието
+            if (isAdmin || _event.AuthorId.ToLower() == userId.ToLower())
+            {
+                _event.IsDeleted = true;
+                await this._context.SaveChangesAsync();
+                opResult = true;
+            }
         }
 
         return opResult;

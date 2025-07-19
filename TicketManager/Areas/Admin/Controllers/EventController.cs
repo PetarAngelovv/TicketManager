@@ -7,12 +7,13 @@ using System.Globalization;
 using TicketManager.Services.Contracts;
 using TicketManager.Web.Controllers;
 using TicketManager.Web.ViewModels.Event;
+using static GCommon.GlobalValidation;
 using static GCommon.GlobalValidation.Event;
 
 namespace TicketManager.Web.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Area(RoleConstants.Admin)]
+    [Authorize(Roles = RoleConstants.Admin)]
     public class EventController : BaseController
     {
 
@@ -24,16 +25,15 @@ namespace TicketManager.Web.Areas.Admin.Controllers
             _EventService = eventService;
             _ICategoryService = categoryService;
         }
-
+     
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             try
             {
                 string userId = this.GetUserId();
                 IEnumerable<EventIndexViewModel> allEvents = await this._EventService.GetAllAsync(userId);
-                return this.View(allEvents);
+                return this.View(allEvents.ToList());
             }
             catch (Exception ex)
             {

@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Globalization;
 
 using TicketManager.Services.Contracts;
-using TicketManager.Web.Controllers;
+
 using TicketManager.Web.ViewModels.Event;
-using static GCommon.GlobalValidation.Event;
+using static GCommon.GlobalValidation;
+
 
 namespace TicketManager.Web.Controllers
 {
-
+    [Authorize(Roles = RoleConstants.User)]
     public class EventController : BaseController
     {
      
@@ -22,13 +21,13 @@ namespace TicketManager.Web.Controllers
             _EventService = eventService;
              _ICategoryService = categoryService;
         }
+
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             try
             {
-                string userId = this.GetUserId();
+                string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
                 IEnumerable<EventIndexViewModel> allEvents = await this._EventService.GetAllAsync(userId);
                 return this.View(allEvents.ToList());
             }
@@ -40,7 +39,6 @@ namespace TicketManager.Web.Controllers
         } 
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             try

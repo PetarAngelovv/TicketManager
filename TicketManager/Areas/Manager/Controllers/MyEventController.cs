@@ -26,7 +26,7 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         {
             string userId = GetUserId();
             var events = await _eventService.GetAllAsync(userId);
-            return View(events);
+            return View(events.ToList());
         }
 
         [HttpGet]

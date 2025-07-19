@@ -1,59 +1,85 @@
-﻿@using TicketManager.Web.ViewModels.Event;
-@model IEnumerable<EventIndexViewModel>;
-
+﻿@model List<TicketManager.Web.ViewModels.Event.EventIndexViewModel>
 @{
-    ViewData["Title"] = "All Events";
+    ViewData["Title"] = "Admin";
+    Layout = "_Layout";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
-    <h2>@ViewData["Title"]</h2>
-            <a asp-area="Admin" asp-controller="Event" asp-action="Create" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add Event
-        </a>
-    
-</div>
-<hr />
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">🎟️ All Events</h2>
 
-<div class="row text-center">
-    @foreach (EventIndexViewModel _event in Model)
-    {
-        <div class="col-md-3 mb-4">
-            <div class="card h-100" style="width: 100%;">
-                @if (!string.IsNullOrEmpty(_event.ImageUrl))
-                {
-                    <img src="@_event.ImageUrl" class="card-img-top" style="max-height: 150px; object-fit: contain;" alt="@_event.Name">
-                }
-                else
-                {
-                    <img src="~/images/default-image.jpg" class="card-img-top" style="max-height: 150px; object-fit: contain;" alt="No Image Available">
-                }
+    <div class="row text-center" id="eventsContainer">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var _event = Model[i];
+            var extraClass = i >= 3 ? "d-none extra-event" : ""; // скриваме след 3-тия
+                                                                 <div class="col-md-4 mb-4 @extraClass">
+                                                                     <div class="card h-100">
+                                                                         <img src="@(_event.ImageUrl ?? "~/images/default-image.jpg")"
+                                                                              class="card-img-top"
+                                                                              style="max-height: 150px; object-fit: contain;" />
+                                                                         <div class="card-body d-flex flex-column">
+                                                                             <h5 class="card-title">@_event.Name</h5>
+                                                                             <p class="card-text">📂 Category: @_event.CategoryName</p>
+                                                                             <p class="card-text"><small>❤️ Favorites: @_event.SavedCount</small></p>
 
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">@_event.Name</h5>
-                    <p class="card-text">Category: @_event.CategoryName</p>
-                    <p class="card-text"><small>Favorites: @_event.SavedCount</small></p>
-                    <div class="d-flex justify-content-between mt-auto">
-                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
-                        {
-                            <a asp-controller="Event" asp-action="Details" asp-route-id="@_event.Id" class="btn btn-info me-2 w-50">
+                        <div class="d-flex justify-content-between mt-auto">
+                            <a asp-controller="Event" asp-action="Details" asp-route-id="@_event.Id"
+                               class="btn btn-info me-2 w-50">
                                 <i class="fas fa-info-circle"></i> Details
                             </a>
-                            <form asp-controller="Event" asp-action="Save" method="post" class="w-50">
-                                <input type="hidden" name="id" value="@_event.Id" />
-                                <button type="submit" class="btn btn-success w-100">
-                                    <i class="fas fa-heart"></i> Favorites
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a asp-controller="Event" asp-action="Details" asp-route-id="@_event.Id" class="btn btn-info w-100">
-                                <i class="fas fa-info-circle"></i> Details
-                            </a>
-                        }
+
+                            @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
+                            {
+                                <form asp-controller="Event" asp-action="Save" method="post" class="w-50">
+                                    <input type="hidden" name="id" value="@_event.Id" />
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-heart"></i> Save
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-controller="Favorites" asp-action="Index" class="btn btn-outline-secondary w-50">
+                                    Saved
+                                </a>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
+        }
+    </div>
+
+    @if (Model.Count > 3)
+    {
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" id="toggleButton" onclick="toggleEvents()">See More</button>
         </div>
     }
+
+    <div class="text-center mt-4">
+        <a asp-controller="Event" asp-action="Favorites" class="btn btn-outline-danger w-100 mt-4">
+            <i class="fas fa-heart"></i>❤️ Go to Favorites
+        </a>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        function toggleEvents() {
+            const extraEvents = document.querySelectorAll('.extra-event');
+            const button = document.getElementById('toggleButton');
+            const isHidden = extraEvents[0].classList.contains('d-none');
+
+            extraEvents.forEach(e => {
+                if (isHidden) {
+                    e.classList.remove('d-none');
+                } else {
+                    e.classList.add('d-none');
+                }
+            });
+
+            button.textContent = isHidden ? 'See Less' : 'See More';
+        }
+    </script>
+}

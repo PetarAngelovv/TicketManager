@@ -57,6 +57,28 @@ namespace TicketManager.Web.Controllers
                 return this.RedirectToAction(nameof(Index));
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetDetailsPartial(int? id)
+        {
+            try
+            {
+                string? userId = this.GetUserId();
+                EventDetailsViewModel eventDetails = await this._EventService.GetEventDetailsAsync(userId, id);
+
+                if (eventDetails == null)
+                {
+                    return NotFound();
+                }
+
+                // Връщаме частичен view
+                return PartialView("EventDetailsPartial", eventDetails);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> Favorites()
@@ -79,6 +101,7 @@ namespace TicketManager.Web.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(int? id)
         {
             try
@@ -87,26 +110,27 @@ namespace TicketManager.Web.Controllers
 
                 if (id == null)
                 {
-                    return this.RedirectToAction(nameof(Index));
+                    return Json(new { success = false, message = "Invalid ID" });
                 }
 
                 bool favAddResult = await this._EventService.AddEventToUserFavoritesListAsync(userId, id.Value);
 
-                if (favAddResult == false)
+                if (!favAddResult)
                 {
-                    return this.RedirectToAction(nameof(Index));
+                    return Json(new { success = false, message = "Already added" });
                 }
 
-                return this.RedirectToAction(nameof(Favorites));
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return this.RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Exception: " + e.Message });
             }
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int? id)
         {
             try
@@ -115,22 +139,22 @@ namespace TicketManager.Web.Controllers
 
                 if (id == null)
                 {
-                    return this.RedirectToAction(nameof(Index));
+                    return Json(new { success = false, message = "Invalid ID" });
                 }
 
                 bool favRemoveResult = await this._EventService.RemoveEventFromUserFavoritesListAsync(userId, id.Value);
 
-                if (favRemoveResult == false)
+                if (!favRemoveResult)
                 {
-                    return this.RedirectToAction(nameof(Index));
+                    return Json(new { success = false, message = "Failed to remove from favorites" });
                 }
 
-                return this.RedirectToAction(nameof(Favorites));
+                return Json(new { success = true });
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return this.RedirectToAction(nameof(Index));
+                return Json(new { success = false, message = "Server error" });
             }
         }
     }

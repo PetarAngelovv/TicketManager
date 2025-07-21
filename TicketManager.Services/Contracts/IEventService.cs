@@ -17,6 +17,6 @@ namespace TicketManager.Services.Contracts
             Task<bool> AddEventToUserFavoritesListAsync(string userId, int id);
             Task<bool> RemoveEventFromUserFavoritesListAsync(string userId, int id);
             Task<IEnumerable<EventIndexViewModel>> GetAllByCreatorAsync(string? userId);
-        Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, string? userId);
+        Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, int? categoryId, string? userId);
     }
 }

@@ -334,7 +334,7 @@ public class EventService : IEventService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string? term, string? userId)
+    public async Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string? term, int? categoryId, string? userId)
     {
         var query = this._context.Events
             .Where(e => !e.IsDeleted);
@@ -345,6 +345,11 @@ public class EventService : IEventService
             query = query.Where(e =>
                 e.Name.ToLower().Contains(lowered) ||
                 e.Description.ToLower().Contains(lowered));
+        }
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(e => e.CategoryId == categoryId.Value);
         }
 
         var results = await query
@@ -361,6 +366,7 @@ public class EventService : IEventService
 
         return results;
     }
+
 
 
 

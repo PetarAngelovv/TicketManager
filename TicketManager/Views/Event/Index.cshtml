@@ -14,6 +14,14 @@
            
     <h2 class="mb-4 text-center">🎟️ All Events</h2>
 
+    <select id="categoryFilter" class="form-select mb-3">
+        <option value="">All Categories</option>
+        @foreach (var category in ViewBag.Categories as List<AddCategoryDropDownModel>)
+        {
+            <option value="@category.Id">@category.Name</option>
+        }
+    </select>
+
     <div class="mb-4">
         <input type="text" id="eventSearchInput" class="form-control" placeholder="🔍 Search events..." />
     </div>
@@ -101,21 +109,25 @@
                     });
             });
                     $(document).ready(function () {
-            $('#eventSearchInput').on('keyup', function () {
-                let term = $(this).val();
+                   function filterAndSearch() {
+                         let term = $('#eventSearchInput').val();
+                         let categoryId = $('#categoryFilter').val();
 
-                $.ajax({
-                    url: '/Event/Search',
-                    type: 'GET',
-                    data: { term: term },
-                    success: function (result) {
-                        $('#eventResults').html(result);
-                    },
-                    error: function () {
-                        $('#eventResults').html('<p class="text-danger">Error loading events.</p>');
-                    }
-                });
-            });
+                         $.ajax({
+                             url: '/Event/Search',
+                             type: 'GET',
+                             data: { term: term, categoryId: categoryId },
+                             success: function (result) {
+                                 $('#eventResults').html(result);
+                             },
+                             error: function () {
+                                 $('#eventResults').html('<p class="text-danger">Error loading events.</p>');
+                             }
+                         });
+                     }
+
+                     $('#eventSearchInput').on('keyup', filterAndSearch);
+                     $('#categoryFilter').on('change', filterAndSearch);
         });
 
     });

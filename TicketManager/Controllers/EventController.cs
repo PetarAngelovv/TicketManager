@@ -181,14 +181,13 @@ namespace TicketManager.Web.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Search(string term)
+        public async Task<IActionResult> Search(string? term, int? categoryId)
         {
-            string? userId = this.GetUserId();
-            var events = await this._EventService.SearchEventsAsync(term, userId);
-
-            return PartialView("EventListPartial", events);
+            string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
+            var results = await _EventService.SearchEventsAsync(term, categoryId, userId);
+            return PartialView("EventListPartial", results);
         }
+
 
     }
 }

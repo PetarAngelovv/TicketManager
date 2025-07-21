@@ -1,4 +1,5 @@
-﻿@model List<TicketManager.Web.ViewModels.Event.EventIndexViewModel>
+﻿@using TicketManager.Web.ViewModels.Event
+@model List<TicketManager.Web.ViewModels.Event.EventIndexViewModel>
 
 @{
     ViewData["Title"] = "Welcome";
@@ -10,55 +11,17 @@
 </form>
 
 <div class="container mt-5">
+           
     <h2 class="mb-4 text-center">🎟️ All Events</h2>
 
-    <div class="row text-center" id="eventsContainer">
-        @for (int i = 0; i < Model.Count; i++)
-        {
-            var _event = Model[i];
-            var extraClass = i >= 3 ? "d-none extra-event" : "";
-            <div class="col-md-4 mb-4 @extraClass">
-                <div class="card h-100">
-                    <img src="@(_event.ImageUrl ?? Url.Content("~/images/default-image.jpg"))"
-                         class="card-img-top"
-                         style="max-height: 150px; object-fit: contain;" />
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@_event.Name</h5>
-                        <p class="card-text">📂 Category: @_event.CategoryName</p>
-                        <p class="card-text">
-                            <small>❤️ Favorites: <span class="favorites-count">@_event.SavedCount</span></small>
-                        </p>
-
-                        <button class="btn btn-info fw-bold w-100 btn-details mb-2"
-                                data-event-id="@_event.Id">
-                            <i class="fas fa-info-circle"></i> Details
-                        </button>
-
-                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
-                        {
-                            <button class="btn btn-success w-100 btn-save"
-                                    data-event-id="@_event.Id">
-                                <i class="fas fa-heart"></i> Save
-                            </button>
-                        }
-                        else if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && _event.IsSaved)
-                        {
-                            <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
-                                <i class="fas fa-heart"></i> Go to Favorites
-                            </a>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
+    <div class="mb-4">
+        <input type="text" id="eventSearchInput" class="form-control" placeholder="🔍 Search events..." />
     </div>
 
-    @if (Model.Count > 3)
-    {
-        <div class="text-center mt-3">
-            <button class="btn btn-primary" id="toggleButton" onclick="toggleEvents()">See More</button>
-        </div>
-    }
+    <div id="eventResults">
+        @await Html.PartialAsync("EventListPartial", Model)
+    </div>
+
 
     <div class="text-center mt-4">
         <a asp-controller="Event" asp-action="Favorites" class="btn btn-outline-danger w-100 mt-4">
@@ -137,6 +100,24 @@
                         modal.show();
                     });
             });
+                    $(document).ready(function () {
+            $('#eventSearchInput').on('keyup', function () {
+                let term = $(this).val();
+
+                $.ajax({
+                    url: '/Event/Search',
+                    type: 'GET',
+                    data: { term: term },
+                    success: function (result) {
+                        $('#eventResults').html(result);
+                    },
+                    error: function () {
+                        $('#eventResults').html('<p class="text-danger">Error loading events.</p>');
+                    }
+                });
+            });
         });
+
+    });
     </script>
 }

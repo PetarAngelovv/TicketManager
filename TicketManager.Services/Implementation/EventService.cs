@@ -334,4 +334,35 @@ public class EventService : IEventService
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string? term, string? userId)
+    {
+        var query = this._context.Events
+            .Where(e => !e.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(term))
+        {
+            string lowered = term.ToLower();
+            query = query.Where(e =>
+                e.Name.ToLower().Contains(lowered) ||
+                e.Description.ToLower().Contains(lowered));
+        }
+
+        var results = await query
+            .Select(e => new EventIndexViewModel
+            {
+                Id = e.Id,
+                Name = e.Name,
+                ImageUrl = e.ImageUrl,
+                IsAuthor = e.AuthorId == userId,
+                CategoryName = e.Category.Name,
+                IsSaved = e.UsersEvents.Any(ue => ue.UserId == userId)
+            })
+            .ToListAsync();
+
+        return results;
+    }
+
+
+
+
 }

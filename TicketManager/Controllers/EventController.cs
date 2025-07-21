@@ -25,6 +25,8 @@ namespace TicketManager.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ViewBag.Categories = await _ICategoryService.GetCategoriesDropDownAsync();
+
             try
             {
                 string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
@@ -36,6 +38,7 @@ namespace TicketManager.Web.Controllers
                 Console.WriteLine(ex.Message);
                 return this.RedirectToAction(nameof(Index), "Home");
             }
+
         } 
 
         [HttpGet]
@@ -69,8 +72,6 @@ namespace TicketManager.Web.Controllers
                 {
                     return NotFound();
                 }
-
-                // Връщаме частичен view
                 return PartialView("EventDetailsPartial", eventDetails);
             }
             catch (Exception ex)
@@ -157,5 +158,37 @@ namespace TicketManager.Web.Controllers
                 return Json(new { success = false, message = "Server error" });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Buy(int? id)
+        {
+            try
+            {
+                string userId = this.GetUserId()!;
+
+                if (id == null)
+                {
+                    return Json(new { success = false, message = "Invalid ID" });
+                }
+
+
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Json(new { success = false, message = "Server error" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string term)
+        {
+            string? userId = this.GetUserId();
+            var events = await this._EventService.SearchEventsAsync(term, userId);
+
+            return PartialView("EventListPartial", events);
+        }
+
     }
 }

@@ -26,6 +26,7 @@
         <input type="text" id="eventSearchInput" class="form-control" placeholder="🔍 Search events..." />
     </div>
 
+
     <div id="eventResults">
         @await Html.PartialAsync("EventListPartial", Model)
     </div>
@@ -46,7 +47,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="eventDetailsContent">
-                    <!-- AJAX content will go here -->
                 </div>
             </div>
         </div>
@@ -55,44 +55,44 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            // AJAX Save Favorite
-            $(document).on("click", ".btn-save", function () {
-                const button = $(this);
-                const eventId = button.data("event-id");
+        // AJAX Save Favorite
+            $(document).ready(function () {
+                $(document).on("click", ".btn-save", function () {
+                     const button = $(this);
+                     const eventId = button.data("event-id");
 
-                $.ajax({
-                    url: "/Event/Save",
-                    method: "POST",
-                    data: { id: eventId },
-                    headers: {
-                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    $.ajax({
+                        url: "/Event/Save",
+                        method: "POST",
+                        data: { id: eventId },
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                     },
                     success: function (response) {
-                        if (response.success) {
-                            const card = button.closest(".card");
-                            const countSpan = card.find(".favorites-count");
+                            if (response.success) {
+                                const card = button.closest(".card");
+                                const countSpan = card.find(".favorites-count");
 
-                            let count = parseInt(countSpan.text());
-                            count++;
-                            countSpan.text(count);
+                                let count = parseInt(countSpan.text());
+                                count++;
+                                countSpan.text(count);
 
-                            button.replaceWith(`
-                                <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
-                                    <i class="fas fa-heart"></i> Go to Favorites
-                                </a>
-                            `);
-                        } else {
-                            alert(response.message || "Error saving event.");
-                        }
+                                button.replaceWith(`
+                                    <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
+                                        <i class="fas fa-heart"></i> Go to Favorites
+                                    </a>
+                                `);
+                            } else {
+                                alert(response.message || "Error saving event.");
+                            }
                     },
-                    error: function () {
+                        error: function () {
                         alert("AJAX error.");
                     }
                 });
             });
-
-            // AJAX Details
+        });
+         // AJAX Details
             $(document).on("click", ".btn-details", function () {
                 const eventId = $(this).data("event-id");
 
@@ -108,7 +108,8 @@
                         modal.show();
                     });
             });
-                    $(document).ready(function () {
+                 // AJAX Search
+            $(document).ready(function () {
                    function filterAndSearch() {
                          let term = $('#eventSearchInput').val();
                          let categoryId = $('#categoryFilter').val();
@@ -128,8 +129,43 @@
 
                      $('#eventSearchInput').on('keyup', filterAndSearch);
                      $('#categoryFilter').on('change', filterAndSearch);
+            });
+             // AJAX Buy
+
+               document.addEventListener('DOMContentLoaded', function () {
+            const buyButtons = document.querySelectorAll('.buy-ticket-btn');
+
+            buyButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const eventId = this.getAttribute('data-event-id');
+
+                    fetch(`/Event/Buy?id=${eventId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('✅ Ticket purchased!');
+                                updateTicketsLeft(eventId);
+                            } else {
+                                alert('❌ ' + data.message);
+                            }
+                        });
+                });
+            });
+
+            function updateTicketsLeft(eventId) {
+                fetch(`/Event/GetTicketsLeft?id=${eventId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
+                            if (ticketsLeftElement) {
+                                ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
+                            }
+                        }
+                    });
+            }
         });
 
-    });
+
     </script>
 }

@@ -33,9 +33,6 @@
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Manage Users</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Event" asp-action="Index">All Events</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="Event" asp-action="Create">Add Event</a>
                             </li>
                         }
@@ -46,12 +43,6 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Manager" asp-controller="MyEvent" asp-action="Create">Add Event</a>
-                            </li>
-                        }
-                        else if (User.IsInRole("User"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Ticket" asp-action="Buy">Buy Tickets</a>
                             </li>
                         }
                     </ul>
@@ -80,3 +71,22 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+@section Scripts {
+    <script>
+        $(document).on('click', '.buy-ticket-btn', function () {
+            const eventId = $(this).data('event-id');
+            $.post("/Event/Buy", { id: eventId })
+                .done(function (res) {
+                    if (res.success) {
+                        alert("Ticket bought successfully!");
+                        location.reload();
+                    } else {
+                        alert(res.message);
+                    }
+                })
+                .fail(function () {
+                    alert("Something went wrong. Please try again.");
+                });
+        });
+    </script>
+}

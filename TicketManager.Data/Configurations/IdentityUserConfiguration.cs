@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace RecipeSharingPlatform.Data.Configurations
+namespace TicketManager.Data.Configurations
 {
     public class IdentityUserConfiguration : IEntityTypeConfiguration<IdentityUser>
     {

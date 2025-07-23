@@ -43,20 +43,25 @@ builder.Services.AddRazorPages();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IRoleSeederService, RoleSeederService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
 var app = builder.Build();
 
-// Seed roles and admin user
+// Seed roles
 using (var scope = app.Services.CreateScope())
 {
-    var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleSeederService>();
+    var services = scope.ServiceProvider;
+
+    var roleSeeder = services.GetRequiredService<IRoleSeederService>();
+
     await roleSeeder.SeedRolesAsync();
     await roleSeeder.SeedAdminAsync();
 }
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 app.UseHttpsRedirection();
@@ -72,21 +77,9 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "default",
+    name: "default",//Event maybe down on the "Home"
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
-
 
 app.MapRazorPages();
 
 app.Run();
-
-
-
-
-
-
-
-
-

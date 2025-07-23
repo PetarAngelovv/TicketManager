@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using TicketManager.Data.Models;
-using TicketManager.Web.ViewModels.Event;
+﻿using TicketManager.Web.ViewModels.Event;
 
 namespace TicketManager.Services.Contracts
 {
@@ -17,6 +15,9 @@ namespace TicketManager.Services.Contracts
             Task<bool> AddEventToUserFavoritesListAsync(string userId, int id);
             Task<bool> RemoveEventFromUserFavoritesListAsync(string userId, int id);
             Task<IEnumerable<EventIndexViewModel>> GetAllByCreatorAsync(string? userId);
-        Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, int? categoryId, string? userId);
+            Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, int? categoryId, string? userId);
+            Task BuyTicketAsync(int eventId, string userId);
+            Task<int> GetTicketsLeftAsync(int eventId);
+
     }
 }

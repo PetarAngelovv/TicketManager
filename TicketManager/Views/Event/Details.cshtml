@@ -10,6 +10,14 @@
     <h2>@ViewData["Title"]</h2>
 </div>
 <hr />
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
 <div class="row justify-content-center" style="margin: 0 auto; max-width: 800px;">
     <div class="col-md-4 text-center">
@@ -32,6 +40,8 @@
             <p class="card-text"><strong>Category:</strong> @Model.CategoryName</p>
             <p class="card-text"><strong>Created On:</strong> @Model.CreatedOn</p>
             <p class="card-text"><strong>Author:</strong> @Model.Author</p>
+            <p class="card-text"><strong>Available Tickets:</strong> @Model.TicketsLeft</p>
+
             <hr />
         </div>
 
@@ -41,17 +51,33 @@
                     <i class="fas fa-arrow-left"></i> Back
                 </button>
 
-                @* Показвай бутона "Add to Favorites", ако потребителят е влязъл, не е автор и не е запазил събитието *@
-                @if (User?.Identity?.IsAuthenticated == true && !Model.IsAuthor && !Model.IsSaved)
+                @if (User?.Identity?.IsAuthenticated == true && !Model.IsAuthor && Model.TotalTickets > 0)
                 {
-                    <form asp-controller="Event" asp-action="Favorites" method="post" class="d-flex justify-content-center align-items-center flex-fill mx-1">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-heart"></i> Add to Favorites
-                        </button>
-                    </form>
+                    <button class="btn btn-primary w-100 mt-3 buy-ticket-btn" data-event-id="@Model.Id">
+                        <i class="fas fa-ticket-alt"></i> Buy Ticket
+                    </button>
                 }
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).on('click', '.buy-ticket-btn', function () {
+            const eventId = $(this).data('event-id');
+            $.post("/Event/Buy", { id: eventId })
+                .done(function (res) {
+                    if (res.success) {
+                        alert("Ticket bought successfully!");
+                        location.reload();
+                    } else {
+                        alert(res.message);
+                    }
+                })
+                .fail(function () {
+                    alert("Something went wrong. Please try again.");
+                });
+        });
+    </script>
+}

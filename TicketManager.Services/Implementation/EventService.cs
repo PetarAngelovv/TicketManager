@@ -19,25 +19,27 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<EventIndexViewModel>> GetAllAsync(string? userId)
     {
-        IEnumerable<EventIndexViewModel> events = await _context.Events
-                .Include(e => e.Category)
-                .Include(e => e.UsersEvents)
-                .AsNoTracking()
-                .Select(e => new EventIndexViewModel()
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    ImageUrl = e.ImageUrl,
-                    CategoryName = e.Category.Name,
-                    SavedCount = e.UsersEvents.Count(),
-                    IsAuthor = userId != null ? e.AuthorId.ToLower() == userId.ToLower() : false,
-                    IsSaved = userId != null ? e.UsersEvents.Any(ur => ur.UserId.ToLower() == userId.ToLower()) : false
+        var events = await _context.Events
+            .Include(e => e.Category)
+            .Include(e => e.UsersEvents)
+            .Include(e => e.Tickets)
+            .AsNoTracking()
+            .ToListAsync();
 
-                })
-               .ToArrayAsync();
+        var eventViewModels = events.Select(e => new EventIndexViewModel()
+        {
+            Id = e.Id,
+            Name = e.Name,
+            ImageUrl = e.ImageUrl,
+            CategoryName = e.Category.Name,
+            SavedCount = e.UsersEvents.Count(),
+            IsAuthor = userId != null && e.AuthorId.ToLower() == userId.ToLower(),
+            IsSaved = userId != null && e.UsersEvents.Any(ur => ur.UserId.ToLower() == userId.ToLower()),
+            TicketsLeft = e.Tickets.Count(t => !t.IsSold)
+        });
 
-        return events;
-    }  //DONE
+        return eventViewModels;
+    }
 
     public async Task<bool> CreateEventAsync(string? userId, EventCreateInputModel inputModel)
     {
@@ -60,16 +62,37 @@ public class EventService : IEventService
                 Author = user,
                 CategoryId = category.Id,
                 Category = category
-
             };
+
             await _context.Events.AddAsync(newEvent);
             await _context.SaveChangesAsync();
+
+          
+            var tickets = new List<Ticket>();
+            for (int i = 0; i < newEvent.TotalTickets; i++)
+            {
+                tickets.Add(new Ticket
+                {
+                    Price = newEvent.TicketPrice, 
+                    EventId = newEvent.Id,
+                    IsSold = false
+                });
+            }
+
+            await _context.Tickets.AddRangeAsync(tickets);
+            await _context.SaveChangesAsync(); 
+
+            opResult = true;
         }
 
-        opResult = true;
-
-         return opResult;
-    }//DONE
+        return opResult;
+    }
+    public async Task<int> GetTicketsLeftAsync(int eventId)
+    {
+        return await _context.Tickets
+            .Where(t => t.EventId == eventId && !t.IsSold)
+            .CountAsync();
+    }
 
     public async Task<EventDetailsViewModel> GetEventDetailsAsync(string userId, int? id)
     {
@@ -97,13 +120,14 @@ public class EventService : IEventService
                     CreatedOn = _event.CreatedOn.ToString(CreatedOnFormat, CultureInfo.InvariantCulture),
                     TicketPrice = _event.TicketPrice,
                     TotalTickets = _event.TotalTickets,
+                    TicketsLeft = _event.Tickets.Count(t => !t.IsSold),
                     Author = _event.Author.UserName
                 };
 
             }
         }
         return detailsEventVm;
-    }//DONE
+    }
     public async Task<EventDeleteInputModel?> GetEventForDeletingAsync(string? userId, int id)
     {
         bool opResult = false;
@@ -141,9 +165,8 @@ public class EventService : IEventService
             }
         }
         return deleteModel;
-    }//DONE
-
-    public async Task<bool> SoftDeleteEventAsync(string userId, EventDeleteInputModel inputModel) //DONE    
+    }
+    public async Task<bool> SoftDeleteEventAsync(string userId, EventDeleteInputModel inputModel)
     {
 
         bool opResult = false;
@@ -155,7 +178,7 @@ public class EventService : IEventService
         {
             bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
-            // Ако не е админ, трябва да е автор на събитието
+        
             if (isAdmin || _event.AuthorId.ToLower() == userId.ToLower())
             {
                 _event.IsDeleted = true;
@@ -166,7 +189,6 @@ public class EventService : IEventService
 
         return opResult;
     }
-
     public async Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id)
     {
         EventEditInputModel? editModel = null;
@@ -194,9 +216,8 @@ public class EventService : IEventService
 
         }
         return editModel;
-    } //  DONE
-
-    public async Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel)//  DONE
+    }
+    public async Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel)
     {
         bool opResult = false;
         IdentityUser? user = await this._userManager.FindByIdAsync(userId);
@@ -226,7 +247,6 @@ public class EventService : IEventService
         return opResult;
 
     }
-
     public async Task<IEnumerable<EventFavoriteViewModel>> GetFavoriteEventAsync(string userId)
     {
         IEnumerable<EventFavoriteViewModel>? favEvents = null;
@@ -237,23 +257,23 @@ public class EventService : IEventService
             favEvents = await this._context
                 .UsersEvents
                 .Include(ur => ur.Event)
-                .ThenInclude(ur => ur.Category)
+                    .ThenInclude(e => e.Category)
+                .Include(ur => ur.Event.Tickets)
                 .AsNoTracking()
-                 .Where(ur => ur.UserId.ToLower() == userId.ToLower())
+                .Where(ur => ur.UserId.ToLower() == userId.ToLower())
                 .Select(ur => new EventFavoriteViewModel()
                 {
                     Id = ur.Event.Id,
                     Name = ur.Event.Name,
                     ImageUrl = ur.Event.ImageUrl,
-                    Category = ur.Event.Category.Name
-
-
+                    Category = ur.Event.Category.Name,
+                    TicketsLeft = ur.Event.Tickets.Count(t => !t.IsSold) 
                 })
                 .ToArrayAsync();
         }
-        return favEvents;
-    }//DONE
 
+        return favEvents;
+    }
     public async Task<bool> AddEventToUserFavoritesListAsync(string userId, int id)
     {
         bool opResult = false;
@@ -287,8 +307,7 @@ public class EventService : IEventService
         }
 
         return opResult;
-    }//DONE
-
+    }
     public async Task<bool> RemoveEventFromUserFavoritesListAsync(string userId, int id)
     {
         bool opResult = false;
@@ -311,8 +330,7 @@ public class EventService : IEventService
         }
 
         return opResult;
-    }//DONE
-
+    }
     public async Task<IEnumerable<EventIndexViewModel>> GetAllByCreatorAsync(string? userId)
     {
         if (string.IsNullOrEmpty(userId))
@@ -333,7 +351,6 @@ public class EventService : IEventService
             })
             .ToListAsync();
     }
-
     public async Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string? term, int? categoryId, string? userId)
     {
         var query = this._context.Events
@@ -366,6 +383,41 @@ public class EventService : IEventService
 
         return results;
     }
+    public async Task BuyTicketAsync(int eventId, string userId)
+    {
+
+        var availableTicket = await _context.Tickets
+            .Where(t => t.EventId == eventId && !t.IsSold)
+            .FirstOrDefaultAsync();
+
+        if (availableTicket == null)
+        {
+            throw new InvalidOperationException("No available tickets for this event.");
+        }
+
+        var order = new Order
+        {
+            UserId = userId,
+            PurchaseDate = DateTime.UtcNow,
+        };
+        await _context.Orders.AddAsync(order);
+        await _context.SaveChangesAsync();
+
+       
+        var orderTicket = new OrderTicket
+        {
+            OrderId = order.Id,
+            TicketId = availableTicket.Id
+        };
+
+        await _context.OrderTickets.AddAsync(orderTicket);
+
+        
+        availableTicket.IsSold = true;
+
+        await _context.SaveChangesAsync();
+    }
+
 
 
 

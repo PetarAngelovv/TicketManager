@@ -12,25 +12,26 @@ namespace TicketManager.Web.Controllers
     [Authorize(Roles = RoleConstants.User)]
     public class EventController : BaseController
     {
-     
-        private readonly ICategoryService _ICategoryService;
-        private readonly IEventService _EventService;
-       
-        public EventController(IEventService eventService, ICategoryService categoryService)
+
+        private readonly ICategoryService _categoryService;
+        private readonly IEventService _eventService;
+        private readonly IOrderService _orderService;
+        public EventController(IEventService eventService, ICategoryService categoryService, IOrderService orderService)
         {
-            _EventService = eventService;
-             _ICategoryService = categoryService;
+            _eventService = eventService;
+             _categoryService = categoryService;
+            _orderService = orderService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ViewBag.Categories = await _ICategoryService.GetCategoriesDropDownAsync();
+            ViewBag.Categories = await _categoryService.GetCategoriesDropDownAsync();
 
             try
             {
                 string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
-                IEnumerable<EventIndexViewModel> allEvents = await this._EventService.GetAllAsync(userId);
+                IEnumerable<EventIndexViewModel> allEvents = await this._eventService.GetAllAsync(userId);
                 return this.View(allEvents.ToList());
             }
             catch (Exception ex)
@@ -47,7 +48,7 @@ namespace TicketManager.Web.Controllers
             try
             {
                 string? userId = this.GetUserId();
-                EventDetailsViewModel eventDetails = await this._EventService.GetEventDetailsAsync(userId, id);
+                EventDetailsViewModel eventDetails = await this._eventService.GetEventDetailsAsync(userId, id);
                 if (eventDetails == null)
                 {
                     return this.RedirectToAction(nameof(Index));
@@ -66,7 +67,7 @@ namespace TicketManager.Web.Controllers
             try
             {
                 string? userId = this.GetUserId();
-                EventDetailsViewModel eventDetails = await this._EventService.GetEventDetailsAsync(userId, id);
+                EventDetailsViewModel eventDetails = await this._eventService.GetEventDetailsAsync(userId, id);
 
                 if (eventDetails == null)
                 {
@@ -87,7 +88,7 @@ namespace TicketManager.Web.Controllers
             try
             {
                 string? userId = this.GetUserId();
-                IEnumerable<EventFavoriteViewModel> favoriteEvents = await this._EventService.GetFavoriteEventAsync(userId);
+                IEnumerable<EventFavoriteViewModel> favoriteEvents = await this._eventService.GetFavoriteEventAsync(userId);
                 if (favoriteEvents == null)
                 {
                     return this.RedirectToAction(nameof(Index));
@@ -114,7 +115,7 @@ namespace TicketManager.Web.Controllers
                     return Json(new { success = false, message = "Invalid ID" });
                 }
 
-                bool favAddResult = await this._EventService.AddEventToUserFavoritesListAsync(userId, id.Value);
+                bool favAddResult = await this._eventService.AddEventToUserFavoritesListAsync(userId, id.Value);
 
                 if (!favAddResult)
                 {
@@ -143,7 +144,7 @@ namespace TicketManager.Web.Controllers
                     return Json(new { success = false, message = "Invalid ID" });
                 }
 
-                bool favRemoveResult = await this._EventService.RemoveEventFromUserFavoritesListAsync(userId, id.Value);
+                bool favRemoveResult = await this._eventService.RemoveEventFromUserFavoritesListAsync(userId, id.Value);
 
                 if (!favRemoveResult)
                 {
@@ -159,32 +160,47 @@ namespace TicketManager.Web.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Buy(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Buy(int id)
         {
             try
             {
                 string userId = this.GetUserId()!;
 
-                if (id == null)
-                {
-                    return Json(new { success = false, message = "Invalid ID" });
-                }
-
+                await this._eventService.BuyTicketAsync(id, userId);
 
                 return Json(new { success = true });
             }
-            catch (Exception e)
+            catch (InvalidOperationException ex)
             {
-                Console.WriteLine(e.Message);
-                return Json(new { success = false, message = "Server error" });
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Something went wrong." });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetTicketsLeft(int id)
+        {
+            try
+            {
+                int ticketsLeft = await _eventService.GetTicketsLeftAsync(id);
+                return Json(new { success = true, ticketsLeft });
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Unable to fetch tickets left." });
+            }
+        }
+
+
+
 
         public async Task<IActionResult> Search(string? term, int? categoryId)
         {
             string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
-            var results = await _EventService.SearchEventsAsync(term, categoryId, userId);
+            var results = await _eventService.SearchEventsAsync(term, categoryId, userId);
             return PartialView("EventListPartial", results);
         }
 

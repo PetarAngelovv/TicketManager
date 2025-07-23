@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TicketManager.Web.ViewModels.Event
+﻿namespace TicketManager.Web.ViewModels.Event
 {
     public class EventFavoriteViewModel
     {
@@ -12,5 +6,6 @@ namespace TicketManager.Web.ViewModels.Event
         public string Name { get; set; } = null!;
         public string? ImageUrl { get; set; }
         public string Category { get; set; } = null!;
+        public int TicketsLeft { get; set; }
     }
 }

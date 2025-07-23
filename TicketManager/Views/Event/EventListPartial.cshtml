@@ -1,40 +1,57 @@
 ﻿@model List<TicketManager.Web.ViewModels.Event.EventIndexViewModel>
 
-<div class="row text-center" id="eventsContainer">
-    @foreach (var _event in Model)
-    {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <img src="@(_event.ImageUrl ?? Url.Content("~/images/default-image.jpg"))"
-                     class="card-img-top"
-                     style="max-height: 150px; object-fit: contain;" />
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">@_event.Name</h5>
-                    <p class="card-text">📂 Category: @_event.CategoryName</p>
-                    <p class="card-text">
-                        <small>❤️ Favorites: <span class="favorites-count">@_event.SavedCount</span></small>
-                    </p>
+@if (!Model.Any())
+{
+    <p class="text-danger text-center mt-4">❗ Няма налични събития.</p>
+}
+else
+{
+    <div class="row text-center" id="eventsContainer">
+        @foreach (var _event in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="@(_event.ImageUrl ?? Url.Content("~/images/default-image.jpg"))"
+                         class="card-img-top"
+                         style="max-height: 150px; object-fit: contain;" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@_event.Name</h5>
+                        <p class="card-text">📂 Category: @_event.CategoryName</p>
+                        <p class="card-text">
+                            <small>❤️ Favorites: <span class="favorites-count">@_event.SavedCount</span></small>
+                        </p>
 
-                    <button class="btn btn-info fw-bold w-100 btn-details mb-2"
-                            data-event-id="@_event.Id">
-                        <i class="fas fa-info-circle"></i> Details
-                    </button>
+                        <span id="tickets-left-@_event.Id">🎟️ Tickets Left: @_event.TicketsLeft</span>
 
-                    @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
-                    {
-                        <button class="btn btn-success w-100 btn-save"
+                        <button class="btn btn-info fw-bold w-100 btn-details mb-2"
                                 data-event-id="@_event.Id">
-                            <i class="fas fa-heart"></i> Save
+                            <i class="fas fa-info-circle"></i> Details
                         </button>
-                    }
-                    else if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && _event.IsSaved)
-                    {
-                        <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
-                            <i class="fas fa-heart"></i> Go to Favorites
-                        </a>
-                    }
+
+                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
+                        {
+                            <button class="btn btn-success w-100 btn-save"
+                                    data-event-id="@_event.Id">
+                                <i class="fas fa-heart"></i> Save
+                            </button>
+                        }
+                        else if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && _event.IsSaved)
+                        {
+                            <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-heart"></i> Go to Favorites
+                            </a>
+                        }
+
+                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor)
+                        {
+                            <button class="btn btn-primary buy-ticket-btn"
+                                    data-event-id="@_event.Id">
+                                🎫 Buy Ticket
+                            </button>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RecipeSharingPlatform.Data.Configurations;
 using System.Reflection;
 using TicketManager.Data.Models;
 

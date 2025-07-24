@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">🎟️ All Events</h2>
+    <h2 class="mb-4 text-center">🎟️ My Events</h2>
 
     <div class="row text-center" id="eventsContainer">
         @for (int i = 0; i < Model.Count; i++)
@@ -22,28 +22,22 @@
                                                                              <p class="card-text">📂 Category: @_event.CategoryName</p>
                                                                              <p class="card-text"><small>❤️ Favorites: @_event.SavedCount</small></p>
 
-                        <div class="d-flex justify-content-between mt-auto">
-                            <a asp-controller="Event" asp-action="Details" asp-route-id="@_event.Id"
-                               class="btn btn-info me-2 w-50">
-                                <i class="fas fa-info-circle"></i> Details
-                            </a>
+                         <div class="d-flex justify-content-between">
+                             <div class="w-50 me-1">
+                                 <a asp-area="Manager" asp-controller="MyEvent" asp-action="Details" asp-route-id="@_event.Id"
+                                    class="btn btn-info w-100">
+                                     <i class="fas fa-info-circle"></i> Details
+                                 </a>
+                             </div>
+                             <div class="w-50 ms-1">
+                                 <a asp-area="Manager" asp-controller="MyEvent" asp-action="Delete" asp-route-id="@_event.Id"
+                                    class="btn btn-danger w-100"
+                                    onclick="return confirm('Are you sure you want to delete this event?');">
+                                     <i class="fas fa-trash"></i> Delete
+                                 </a>
+                             </div>
+                         </div>
 
-                            @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && !_event.IsSaved)
-                            {
-                                <form asp-controller="Event" asp-action="Save" method="post" class="w-50">
-                                    <input type="hidden" name="id" value="@_event.Id" />
-                                    <button type="submit" class="btn btn-success w-100">
-                                        <i class="fas fa-heart"></i> Save
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <a asp-controller="Favorites" asp-action="Index" class="btn btn-outline-secondary w-50">
-                                    Saved
-                                </a>
-                            }
-                        </div>
                     </div>
                 </div>
             </div>

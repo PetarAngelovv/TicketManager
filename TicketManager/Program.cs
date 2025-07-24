@@ -77,9 +77,17 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "default",//Event maybe down on the "Home"
+    name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<TicketManagerDbContext>();
+    context.Database.EnsureCreated(); // това ще създаде таблиците от Identity
+}
 
 app.Run();

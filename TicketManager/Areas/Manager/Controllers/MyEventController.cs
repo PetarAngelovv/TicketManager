@@ -20,14 +20,20 @@ namespace TicketManager.Web.Areas.Manager.Controllers
             _eventService = eventService;
             _categoryService = categoryService;
         }
-    
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             string userId = GetUserId();
             var events = await _eventService.GetAllAsync(userId);
-            return View(events.ToList());
+
+            var myEvents = events
+                .Where(e => e.IsAuthor) 
+                .ToList();
+
+            return View(myEvents);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -125,5 +131,22 @@ namespace TicketManager.Web.Areas.Manager.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> HardDelete(int id)
+        {
+            bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id);
+
+            if (!result)
+            {
+                TempData["ErrorMessage"] = "Hard deletion failed.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            TempData["SuccessMessage"] = "Event permanently deleted.";
+            return RedirectToAction("Index");
+        }
+
     }
 }

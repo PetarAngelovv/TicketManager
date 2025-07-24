@@ -1,12 +1,11 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using static GCommon.GlobalValidation.Event;
 
 namespace TicketManager.Web.ViewModels.Event
 {
     public class EventEditInputModel
     {
-        public int Id { get; set; }  // за редакция, при създаване е 0
+        public int Id { get; set; } 
 
         [Required]
         [StringLength(NameMaxLength, MinimumLength = NameMinLength)]
@@ -32,8 +31,6 @@ namespace TicketManager.Web.ViewModels.Event
         [Required]
         public int CategoryId { get; set; }
 
-
-        // Dropdown за избор на категория
         public IEnumerable<AddCategoryDropDownModel>? Categories { get; set; }
     }
 }

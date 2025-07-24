@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TicketManager.Web.ViewModels.Event;
 using static GCommon.GlobalValidation.Event;
 
 namespace TicketManager.Web.ViewModels.Event

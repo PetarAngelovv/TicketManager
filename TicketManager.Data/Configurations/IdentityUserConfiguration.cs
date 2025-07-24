@@ -8,24 +8,47 @@ namespace TicketManager.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<IdentityUser> builder)
         {
-           builder.HasData(this.GenerateSeedUser());
+            builder.HasData(this.GenerateSeedUsers());
         }
-        public IdentityUser GenerateSeedUser()
+
+        private List<IdentityUser> GenerateSeedUsers()
         {
-            var defaultUser = new IdentityUser
+            var passwordHasher = new PasswordHasher<IdentityUser>();
+
+            var admin = new IdentityUser
             {
-                Id = "df1c3a0f-1234-4cde-bb55-d5f15a6aabcd",
+                Id = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                 UserName = "admin@TManager.com",
                 NormalizedUserName = "ADMIN@TMANAGER.COM",
                 Email = "admin@TManager.com",
                 NormalizedEmail = "ADMIN@TMANAGER.COM",
                 EmailConfirmed = true,
-                PasswordHash = new PasswordHasher<IdentityUser>().HashPassword(
-                    new IdentityUser { UserName = "admin@TManager.com" },
-                    "Admin123!")
+                PasswordHash = passwordHasher.HashPassword(null, "Admin123!")
             };
-            return defaultUser;
-           
+
+            var manager = new IdentityUser
+            {
+                Id = "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b",
+                UserName = "manager@TManager.com",
+                NormalizedUserName = "MANAGER@TMANAGER.COM",
+                Email = "manager@TManager.com",
+                NormalizedEmail = "MANAGER@TMANAGER.COM",
+                EmailConfirmed = true,
+                PasswordHash = passwordHasher.HashPassword(null, "Manager123!")
+            };
+
+            var user = new IdentityUser
+            {
+                Id = "b3102d7f-82cb-470c-88d3-a299a1e8c1b9",
+                UserName = "user@TManager.com",
+                NormalizedUserName = "USER@TMANAGER.COM",
+                Email = "user@TManager.com",
+                NormalizedEmail = "USER@TMANAGER.COM",
+                EmailConfirmed = true,
+                PasswordHash = passwordHasher.HashPassword(null, "User123!")
+            };
+
+            return new List<IdentityUser> { admin, manager, user };
         }
     }
 }

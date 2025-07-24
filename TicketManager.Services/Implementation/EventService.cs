@@ -16,7 +16,6 @@ public class EventService : IEventService
         _context = context;
         _userManager = userManager;
     }
-
     public async Task<IEnumerable<EventIndexViewModel>> GetAllAsync(string? userId)
     {
         var events = await _context.Events
@@ -40,7 +39,6 @@ public class EventService : IEventService
 
         return eventViewModels;
     }
-
     public async Task<bool> CreateEventAsync(string? userId, EventCreateInputModel inputModel)
     {
         bool opResult = false;
@@ -93,7 +91,6 @@ public class EventService : IEventService
             .Where(t => t.EventId == eventId && !t.IsSold)
             .CountAsync();
     }
-
     public async Task<EventDetailsViewModel> GetEventDetailsAsync(string userId, int? id)
     {
         EventDetailsViewModel? detailsEventVm = null;
@@ -178,7 +175,7 @@ public class EventService : IEventService
         {
             bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
-        
+            // Ако не е админ, трябва да е автор на събитието
             if (isAdmin || _event.AuthorId.ToLower() == userId.ToLower())
             {
                 _event.IsDeleted = true;
@@ -188,6 +185,15 @@ public class EventService : IEventService
         }
 
         return opResult;
+    }
+    public async Task<bool> HardDeleteEventAsync(string userId, int eventId)
+    {
+        var eventEntity = await _context.Events.FindAsync(eventId);
+        if (eventEntity == null) return false;
+
+        _context.Events.Remove(eventEntity);
+        await _context.SaveChangesAsync();
+        return true;
     }
     public async Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id)
     {
@@ -385,7 +391,6 @@ public class EventService : IEventService
     }
     public async Task BuyTicketAsync(int eventId, string userId)
     {
-
         var availableTicket = await _context.Tickets
             .Where(t => t.EventId == eventId && !t.IsSold)
             .FirstOrDefaultAsync();
@@ -395,11 +400,13 @@ public class EventService : IEventService
             throw new InvalidOperationException("No available tickets for this event.");
         }
 
+    
         var order = new Order
         {
             UserId = userId,
             PurchaseDate = DateTime.UtcNow,
         };
+
         await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
 
@@ -417,10 +424,4 @@ public class EventService : IEventService
 
         await _context.SaveChangesAsync();
     }
-
-
-
-
-
-
 }

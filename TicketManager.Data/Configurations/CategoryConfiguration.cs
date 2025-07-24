@@ -14,7 +14,6 @@ namespace TicketManager.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(NameMaxLength);
 
-            // Връзка 1 към много: Category -> Events
             builder.HasMany(c => c.Events)
                    .WithOne(e => e.Category)
                    .HasForeignKey(e => e.CategoryId)

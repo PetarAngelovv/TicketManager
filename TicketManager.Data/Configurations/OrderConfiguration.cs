@@ -19,7 +19,7 @@ namespace TicketManager.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.HasOne(o => o.User)
-                .WithMany() // IdentityUser няма навигация към поръчки
+                .WithMany()
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 

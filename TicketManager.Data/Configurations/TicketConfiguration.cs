@@ -12,7 +12,7 @@ namespace TicketManager.Data.Configurations
 
             builder.Property(t => t.Price)
                 .IsRequired()
-                .HasPrecision(18, 2) // decimal(18,2)
+                .HasPrecision(18, 2)
                 .HasColumnType("decimal(18,2)");
 
             builder.Property(t => t.IsSold)
@@ -24,12 +24,12 @@ namespace TicketManager.Data.Configurations
             builder.HasOne(t => t.Event)
                 .WithMany(e => e.Tickets)
                 .HasForeignKey(t => t.EventId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(t => t.OrderTickets)
                 .WithOne(ot => ot.Ticket)
                 .HasForeignKey(ot => ot.TicketId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

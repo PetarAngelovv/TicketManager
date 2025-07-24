@@ -12,7 +12,7 @@ using TicketManager.Data;
 namespace TicketManager.Data.Migrations
 {
     [DbContext(typeof(TicketManagerDbContext))]
-    [Migration("20250713202457_BuildingTheBases")]
+    [Migration("20250724144524_BuildingTheBases")]
     partial class BuildingTheBases
     {
         /// <inheritdoc />
@@ -95,6 +95,26 @@ namespace TicketManager.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "9d98f75a-68cb-4b56-a6b8-b4b2a7061a9f",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "1a2b3c4d-73e1-4f8f-8f1f-6736cfe1a00b",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "2b3c4d5e-82cb-470c-88d3-a299a1e8c1b9",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -189,19 +209,51 @@ namespace TicketManager.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "df1c3a0f-1234-4cde-bb55-d5f15a6aabcd",
+                            Id = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c991b2cf-52ab-4bfa-8397-7f9339b23e1e",
+                            ConcurrencyStamp = "15760d52-bbbb-45e8-a1f7-56c6f2ab362a",
                             Email = "admin@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TMANAGER.COM",
                             NormalizedUserName = "ADMIN@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE5GtKNqHHCAQovic7jVju2C3RirZjGN5TVVcYognsHcxPkQd4ntVngOtcpp0HYY4w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMe9rsaeZ28DsWcwVdM57AECh7DZH9CHwC1dQ08i0/2oN/+jFJVTNRTx1DWzUyu6ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5e092e9b-3a87-4a1d-b1db-1d1430dc0d5b",
+                            SecurityStamp = "590dca43-d64f-48db-afb5-25a1052109ff",
                             TwoFactorEnabled = false,
                             UserName = "admin@TManager.com"
+                        },
+                        new
+                        {
+                            Id = "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f02d0b93-e39c-4e3d-b11e-82e661e5d6c9",
+                            Email = "manager@TManager.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MANAGER@TMANAGER.COM",
+                            NormalizedUserName = "MANAGER@TMANAGER.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAENPprWPWY7xfTf+MJxmjbicrp8SHuy/n8RvKCn9tmlSDcUsZqY6vtR2TQkKmNOx9wA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "60966d7e-6f80-4a09-806f-299b70633a43",
+                            TwoFactorEnabled = false,
+                            UserName = "manager@TManager.com"
+                        },
+                        new
+                        {
+                            Id = "b3102d7f-82cb-470c-88d3-a299a1e8c1b9",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "bdff56ba-0d5e-4b06-92da-9eca9a634fe0",
+                            Email = "user@TManager.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER@TMANAGER.COM",
+                            NormalizedUserName = "USER@TMANAGER.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFy0wsXm3iSoX9QwcdyEjdMghUCdGpZsfGSzn0+vjD1GsV+9pAbO2PgnYsAZ8FnMSw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "e26b13c6-ea92-4fa0-b71c-5638b7edd9d1",
+                            TwoFactorEnabled = false,
+                            UserName = "user@TManager.com"
                         });
                 });
 
@@ -343,7 +395,7 @@ namespace TicketManager.Data.Migrations
                         new
                         {
                             Id = 1,
-                            AuthorId = "cb79d2b9-3231-408b-83d3-30c6879aa313",
+                            AuthorId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             CategoryId = 1,
                             CreatedOn = new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "An outdoor music festival with top artists and bands.",
@@ -355,7 +407,7 @@ namespace TicketManager.Data.Migrations
                         new
                         {
                             Id = 2,
-                            AuthorId = "929dbb49-522c-4f84-a486-5d11e35fd7fc",
+                            AuthorId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             CategoryId = 2,
                             CreatedOn = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Annual city marathon open for all participants.",
@@ -367,7 +419,7 @@ namespace TicketManager.Data.Migrations
                         new
                         {
                             Id = 3,
-                            AuthorId = "1d48e3d2-08e1-4162-8c51-65f0723a017f",
+                            AuthorId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             CategoryId = 4,
                             CreatedOn = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Latest trends and talks in technology and innovation.",
@@ -534,7 +586,7 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -545,13 +597,13 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("TicketManager.Data.Models.Order", "Order")
                         .WithMany("OrderTickets")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TicketManager.Data.Models.Ticket", "Ticket")
                         .WithMany("OrderTickets")
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -564,7 +616,7 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("TicketManager.Data.Models.Event", "Event")
                         .WithMany("Tickets")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");

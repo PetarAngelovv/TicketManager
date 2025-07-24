@@ -24,7 +24,7 @@ namespace TicketManager.Data.Configurations
 
             builder.Property(e => e.TicketPrice)
                 .IsRequired()
-                .HasPrecision(18, 2) // например, за decimal
+                .HasPrecision(18, 2)
 
                 .HasColumnType("decimal(18,2)");
 
@@ -47,45 +47,47 @@ namespace TicketManager.Data.Configurations
             builder.HasQueryFilter(b => b.IsDeleted == false);    
             builder.HasData(GenerateSeedEvents());
         }
+    private List<Event> GenerateSeedEvents()
+    {
+        const string adminId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a";
 
-        private List<Event> GenerateSeedEvents()
+        return new List<Event>()
         {
-            return new List<Event>()
-            {
-                new Event
-                {
-                    Id = 1,
-                    Name = "Summer Music Festival",
-                    Description = "An outdoor music festival with top artists and bands.",
-                    CreatedOn = new DateTime(2025, 7, 20),
-                    TicketPrice = 50.00m,
-                    TotalTickets = 1000,
-                      AuthorId = "cb79d2b9-3231-408b-83d3-30c6879aa313",
-                    CategoryId = 1 // напр. "Concert"
-                },
-                new Event
-                {
-                    Id = 2,
-                    Name = "City Marathon",
-                    Description = "Annual city marathon open for all participants.",
-                    CreatedOn = new DateTime(2025, 9, 15),
-                    TicketPrice = 30.00m,
-                    TotalTickets = 500,
-                       AuthorId = "929dbb49-522c-4f84-a486-5d11e35fd7fc",
-                    CategoryId = 2 // напр. "Sports"
-                },
-                new Event
-                {
-                    Id = 3,
-                    Name = "Tech Conference 2025",
-                    Description = "Latest trends and talks in technology and innovation.",
-                    CreatedOn = new DateTime(2025, 11, 10),
-                    TicketPrice = 120.00m,
-                    TotalTickets = 300,
-                       AuthorId = "1d48e3d2-08e1-4162-8c51-65f0723a017f",
-                    CategoryId = 4 // напр. "Conference"
-                }
-            };
-        }
+             new Event
+             {
+                 Id = 1,
+                 Name = "Summer Music Festival",
+                 Description = "An outdoor music festival with top artists and bands.",
+                 CreatedOn = new DateTime(2025, 7, 20),
+                 TicketPrice = 50.00m,
+                 TotalTickets = 1000,
+                 AuthorId = adminId,
+                 CategoryId = 1
+             },
+             new Event
+             {
+                 Id = 2,
+                 Name = "City Marathon",
+                 Description = "Annual city marathon open for all participants.",
+                 CreatedOn = new DateTime(2025, 9, 15),
+                 TicketPrice = 30.00m,
+                 TotalTickets = 500,
+                 AuthorId = adminId,
+                 CategoryId = 2
+             },
+             new Event
+             {
+                 Id = 3,
+                 Name = "Tech Conference 2025",
+                 Description = "Latest trends and talks in technology and innovation.",
+                 CreatedOn = new DateTime(2025, 11, 10),
+                 TicketPrice = 120.00m,
+                 TotalTickets = 300,
+                 AuthorId = adminId,
+                 CategoryId = 4
+            }
+        };
+    }
+     
     }
 }

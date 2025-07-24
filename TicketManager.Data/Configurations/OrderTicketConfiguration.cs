@@ -8,17 +8,17 @@ namespace TicketManager.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<OrderTicket> builder)
         {
-            builder.HasKey(ot => new { ot.OrderId, ot.TicketId }); // Composite key
+            builder.HasKey(ot => new { ot.OrderId, ot.TicketId });
 
             builder.HasOne(ot => ot.Order)
                 .WithMany(o => o.OrderTickets)
                 .HasForeignKey(ot => ot.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(ot => ot.Ticket)
                 .WithMany(t => t.OrderTickets)
                 .HasForeignKey(ot => ot.TicketId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

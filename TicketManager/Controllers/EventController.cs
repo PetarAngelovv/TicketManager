@@ -193,17 +193,11 @@ namespace TicketManager.Web.Controllers
                 return Json(new { success = false, message = "Unable to fetch tickets left." });
             }
         }
-
-
-
-
         public async Task<IActionResult> Search(string? term, int? categoryId)
         {
             string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
             var results = await _eventService.SearchEventsAsync(term, categoryId, userId);
             return PartialView("EventListPartial", results);
         }
-
-
     }
 }

@@ -224,35 +224,42 @@ public class EventService : IEventService
         return editModel;
     }
     public async Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel)
-    {
-        bool opResult = false;
-        IdentityUser? user = await this._userManager.FindByIdAsync(userId);
-        var ev = await _context.Events
-            .FindAsync(inputModel.Id);
+ {
+     if (string.IsNullOrWhiteSpace(userId) || inputModel == null)
+         return false;
 
-        Category? category = await _context.Categories.FindAsync(inputModel.CategoryId);
+     var user = await _userManager.FindByIdAsync(userId);
+     if (user == null)
+         return false;
 
-        bool isDateValid = DateTime.TryParseExact(inputModel.CreatedOn, CreatedOnFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime createdOnParsed);
+     var ev = await _context.Events.FindAsync(inputModel.Id);
+     if (ev == null || !string.Equals(ev.AuthorId, userId, StringComparison.OrdinalIgnoreCase))
+         return false;
 
-        if (user != null && category != null && ev != null && isDateValid && ev.AuthorId.ToLower() == userId.ToLower())
-        {
-            ev.Name = inputModel.Name;
-            ev.Description = inputModel.Description;
-            ev.TicketPrice = inputModel.TicketPrice;
-            ev.TotalTickets = inputModel.TotalTickets;
-            ev.ImageUrl = inputModel.ImageUrl;
-            ev.CategoryId = category.Id;
-            ev.Category = category;
-            ev.CreatedOn = createdOnParsed;
-        }
+     var category = await _context.Categories.FindAsync(inputModel.CategoryId);
+     if (category == null)
+         return false;
 
-        await this._context.SaveChangesAsync();
+     if (!DateTime.TryParseExact(
+             inputModel.CreatedOn,
+             CreatedOnFormat,
+             CultureInfo.InvariantCulture,
+             DateTimeStyles.None,
+             out DateTime createdOnParsed))
+             return false;
 
-        opResult = true;
+         ev.Name = inputModel.Name;
+         ev.Description = inputModel.Description;
+         ev.TicketPrice = inputModel.TicketPrice;
+         ev.TotalTickets = inputModel.TotalTickets;
+         ev.ImageUrl = inputModel.ImageUrl;
+         ev.CategoryId = category.Id;
+         ev.Category = category;
+         ev.CreatedOn = createdOnParsed;
 
-        return opResult;
-
-    }
+         await _context.SaveChangesAsync();
+         return true;
+ }
     public async Task<IEnumerable<EventFavoriteViewModel>> GetFavoriteEventAsync(string userId)
     {
         IEnumerable<EventFavoriteViewModel>? favEvents = null;

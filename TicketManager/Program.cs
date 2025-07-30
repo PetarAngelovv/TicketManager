@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketManager.Data;
 using TicketManager.Services;
@@ -61,9 +61,10 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseExceptionHandler("/Error/500");
+    app.UseStatusCodePagesWithReExecute("/Error/{0}");
 }
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -87,7 +88,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<TicketManagerDbContext>();
-    context.Database.EnsureCreated(); // това ще създаде таблиците от Identity
+    context.Database.EnsureCreated();
 }
-
 app.Run();

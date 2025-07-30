@@ -217,7 +217,7 @@ namespace TicketManager.Web.Controllers
                 .Take(pageSize)
                 .ToList();
 
-            var viewModel = new PaginatedEventsViewModel
+            var model = new PaginatedEventsViewModel
             {
                 Events = pagedResults,
                 CurrentPage = page,
@@ -226,8 +226,9 @@ namespace TicketManager.Web.Controllers
                 CategoryId = categoryId
             };
 
-            return PartialView("EventListPartial", viewModel.Events);
+            return PartialView("EventListPartial", model);
         }
+
 
     }
 }

@@ -1,7 +1,6 @@
 ﻿@using TicketManager.Web.ViewModels.Event
 @model PaginatedEventsViewModel
 
-
 @{
     ViewData["Title"] = "Welcome";
     Layout = "_Layout";
@@ -12,9 +11,10 @@
 </form>
 
 <div class="container mt-5">
-           
+
     <h2 class="mb-4 text-center">🎟️ All Events</h2>
 
+    <!-- Filter by Category -->
     <select id="categoryFilter" class="form-select mb-3">
         <option value="">All Categories</option>
         @foreach (var category in ViewBag.Categories as List<AddCategoryDropDownModel>)
@@ -23,35 +23,17 @@
         }
     </select>
 
+    <!-- Search -->
     <div class="mb-4">
         <input type="text" id="eventSearchInput" class="form-control" placeholder="🔍 Search events..." />
     </div>
 
-
+    <!-- Results -->
     <div id="eventResults">
-        @await Html.PartialAsync("EventListPartial", Model.Events)
+        @await Html.PartialAsync("EventListPartial", Model)
     </div>
 
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center mt-4">
-            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage - 1 })">Previous</a>
-            </li>
-
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
-                </li>
-            }
-
-            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage + 1 })">Next</a>
-            </li>
-        </ul>
-    </nav>
-
-
+    <!-- Favorites Button -->
     <div class="text-center mt-4">
         <a asp-controller="Event" asp-action="Favorites" class="btn btn-outline-danger w-100 mt-4">
             <i class="fas fa-heart"></i>❤️ Go to Favorites
@@ -74,118 +56,124 @@
 </div>
 
 @section Scripts {
+
     <script>
-        // AJAX Save Favorite
-            $(document).ready(function () {
-                $(document).on("click", ".btn-save", function () {
-                     const button = $(this);
-                     const eventId = button.data("event-id");
+        // Save Favorite
+        $(document).on("click", ".btn-save", function () {
+            const button = $(this);
+            const eventId = button.data("event-id");
 
-                    $.ajax({
-                        url: "/Event/Save",
-                        method: "POST",
-                        data: { id: eventId },
-                        headers: {
-                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                    },
-                    success: function (response) {
-                            if (response.success) {
-                                const card = button.closest(".card");
-                                const countSpan = card.find(".favorites-count");
+            $.ajax({
+                url: "/Event/Save",
+                method: "POST",
+                data: { id: eventId },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        const card = button.closest(".card");
+                        const countSpan = card.find(".favorites-count");
 
-                                let count = parseInt(countSpan.text());
-                                count++;
-                                countSpan.text(count);
+                        let count = parseInt(countSpan.text());
+                        count++;
+                        countSpan.text(count);
 
-                                button.replaceWith(`
-                                    <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
-                                        <i class="fas fa-heart"></i> Go to Favorites
-                                    </a>
-                                `);
-                            } else {
-                                alert(response.message || "Error saving event.");
-                            }
-                    },
-                        error: function () {
-                        alert("AJAX error.");
+                        button.replaceWith(`
+                            <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-heart"></i> Go to Favorites
+                            </a>
+                        `);
+                    } else {
+                        alert(response.message || "Error saving event.");
+                    }
+                },
+                error: function () {
+                    alert("AJAX error.");
+                }
+            });
+        });
+
+        // Show Details
+        $(document).on("click", ".btn-details", function () {
+            const eventId = $(this).data("event-id");
+
+            $.get("/Event/GetDetailsPartial", { id: eventId })
+                .done(function (data) {
+                    $("#eventDetailsContent").html(data);
+                    new bootstrap.Modal(document.getElementById('eventDetailsModal')).show();
+                })
+                .fail(function () {
+                    $("#eventDetailsContent").html("<p class='text-danger'>Error loading details.</p>");
+                    new bootstrap.Modal(document.getElementById('eventDetailsModal')).show();
+                });
+        });
+
+        // Load events with search, filter and page
+        function loadEvents(page = 1) {
+            let term = $('#eventSearchInput').val();
+            let categoryId = $('#categoryFilter').val();
+
+            $.ajax({
+                url: '/Event/Search',
+                type: 'GET',
+                data: { term: term, categoryId: categoryId, page: page },
+                success: function (result) {
+                    $('#eventResults').html(result);
+                },
+                error: function () {
+                    $('#eventResults').html('<p class="text-danger">Error loading events.</p>');
+                }
+            });
+        }
+
+        // Event handlers for search and filter
+        $('#eventSearchInput').on('keyup', function () {
+            loadEvents(1);
+        });
+        $('#categoryFilter').on('change', function () {
+            loadEvents(1);
+        });
+
+        // Pagination (AJAX)
+        $(document).on('click', '.page-link-ajax', function (e) {
+            e.preventDefault();
+            let page = $(this).data('page');
+            loadEvents(page);
+        });
+
+        // Buy Ticket
+        $(document).on('click', '.buy-ticket-btn', function () {
+            const eventId = $(this).data('event-id');
+
+            fetch(`/Event/Buy?id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ Ticket purchased!');
+                        updateTicketsLeft(eventId);
+                    } else {
+                        alert('❌ ' + data.message);
                     }
                 });
-            });
         });
-         // AJAX Details
-            $(document).on("click", ".btn-details", function () {
-                const eventId = $(this).data("event-id");
 
-                $.get("/Event/GetDetailsPartial", { id: eventId })
-                    .done(function (data) {
-                        $("#eventDetailsContent").html(data);
-                        const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
-                        modal.show();
-                    })
-                    .fail(function () {
-                        $("#eventDetailsContent").html("<p class='text-danger'>Error loading details.</p>");
-                        const modal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
-                        modal.show();
-                    });
-            });
-                 // AJAX Search
-            $(document).ready(function () {
-                   function filterAndSearch() {
-                         let term = $('#eventSearchInput').val();
-                         let categoryId = $('#categoryFilter').val();
-
-                         $.ajax({
-                             url: '/Event/Search',
-                             type: 'GET',
-                             data: { term: term, categoryId: categoryId },
-                             success: function (result) {
-                                 $('#eventResults').html(result);
-                             },
-                             error: function () {
-                                 $('#eventResults').html('<p class="text-danger">Error loading events.</p>');
-                             }
-                         });
-                     }
-
-                     $('#eventSearchInput').on('keyup', filterAndSearch);
-                     $('#categoryFilter').on('change', filterAndSearch);
-            });
-             // AJAX Buy
-
-               document.addEventListener('DOMContentLoaded', function () {
-            const buyButtons = document.querySelectorAll('.buy-ticket-btn');
-
-            buyButtons.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const eventId = this.getAttribute('data-event-id');
-
-                    fetch(`/Event/Buy?id=${eventId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('✅ Ticket purchased!');
-                                updateTicketsLeft(eventId);
-                            } else {
-                                alert('❌ ' + data.message);
-                            }
-                        });
-                });
-            });
-
-            function updateTicketsLeft(eventId) {
-                fetch(`/Event/GetTicketsLeft?id=${eventId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
-                            if (ticketsLeftElement) {
-                                ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
-                            }
+        function updateTicketsLeft(eventId) {
+            fetch(`/Event/GetTicketsLeft?id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
+                        if (ticketsLeftElement) {
+                            ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
                         }
-                    });
-            }
+                    }
+                });
+        }
+
+        $(document).ready(function () {
+            loadEvents(1);
         });
-
-
     </script>
 }
+

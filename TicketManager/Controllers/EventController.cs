@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using TicketManager.Services.Contracts;
-
 using TicketManager.Web.ViewModels.Event;
 using static GCommon.GlobalValidation;
 
@@ -24,7 +22,7 @@ namespace TicketManager.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 6)
         {
             ViewBag.Categories = await _categoryService.GetCategoriesDropDownAsync();
 
@@ -32,15 +30,30 @@ namespace TicketManager.Web.Controllers
             {
                 string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
                 IEnumerable<EventIndexViewModel> allEvents = await this._eventService.GetAllAsync(userId);
-                return this.View(allEvents.ToList());
+
+                // Paging
+                int totalItems = allEvents.Count();
+                var pagedEvents = allEvents
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                var viewModel = new PaginatedEventsViewModel
+                {
+                    Events = pagedEvents,
+                    CurrentPage = page,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                };
+
+                return this.View(viewModel);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return this.RedirectToAction(nameof(Index), "Home");
             }
+        }
 
-        } 
 
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
@@ -193,11 +206,28 @@ namespace TicketManager.Web.Controllers
                 return Json(new { success = false, message = "Unable to fetch tickets left." });
             }
         }
-        public async Task<IActionResult> Search(string? term, int? categoryId)
+        public async Task<IActionResult> Search(string? term, int? categoryId, int page = 1, int pageSize = 6)
         {
             string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
             var results = await _eventService.SearchEventsAsync(term, categoryId, userId);
-            return PartialView("EventListPartial", results);
+
+            int totalItems = results.Count();
+            var pagedResults = results
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var viewModel = new PaginatedEventsViewModel
+            {
+                Events = pagedResults,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                SearchTerm = term,
+                CategoryId = categoryId
+            };
+
+            return PartialView("EventListPartial", viewModel.Events);
         }
+
     }
 }

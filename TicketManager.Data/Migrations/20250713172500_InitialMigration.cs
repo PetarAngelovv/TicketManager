@@ -277,16 +277,6 @@ namespace TicketManager.Data.Migrations
                     { 5, "Festival" }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Events",
-                columns: new[] { "Id", "CategoryId", "Date", "Description", "IsDeleted", "Name", "TicketPrice", "TotalTickets" },
-                values: new object[,]
-                {
-                    { 1, 1, new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "An outdoor music festival with top artists and bands.", false, "Summer Music Festival", 50.00m, 1000 },
-                    { 2, 2, new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Annual city marathon open for all participants.", false, "City Marathon", 30.00m, 500 },
-                    { 3, 4, new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "Latest trends and talks in technology and innovation.", false, "Tech Conference 2025", 120.00m, 300 }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",

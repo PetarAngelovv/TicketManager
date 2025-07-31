@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿reposusing Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketManager.Data;
 using TicketManager.Services;
@@ -52,8 +52,10 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    var roleSeeder = services.GetRequiredService<IRoleSeederService>();
+    var context = services.GetRequiredService<TicketManagerDbContext>();
+    context.Database.EnsureCreated();
 
+    var roleSeeder = services.GetRequiredService<IRoleSeederService>();
     await roleSeeder.SeedRolesAsync();
     await roleSeeder.SeedAdminAsync();
 }
@@ -83,11 +85,4 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    var context = services.GetRequiredService<TicketManagerDbContext>();
-    context.Database.EnsureCreated();
-}
 app.Run();

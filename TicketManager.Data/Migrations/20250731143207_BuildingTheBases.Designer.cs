@@ -12,7 +12,7 @@ using TicketManager.Data;
 namespace TicketManager.Data.Migrations
 {
     [DbContext(typeof(TicketManagerDbContext))]
-    [Migration("20250724144524_BuildingTheBases")]
+    [Migration("20250731143207_BuildingTheBases")]
     partial class BuildingTheBases
     {
         /// <inheritdoc />
@@ -211,15 +211,15 @@ namespace TicketManager.Data.Migrations
                         {
                             Id = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "15760d52-bbbb-45e8-a1f7-56c6f2ab362a",
+                            ConcurrencyStamp = "7ff2c1bf-e08c-4051-91e5-dd069dbc3af5",
                             Email = "admin@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TMANAGER.COM",
                             NormalizedUserName = "ADMIN@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMe9rsaeZ28DsWcwVdM57AECh7DZH9CHwC1dQ08i0/2oN/+jFJVTNRTx1DWzUyu6ng==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE8Reef5oeCQJKyrVD7oxlSibScueoLr1wnDO1vzELT32W0Tl4oekfxWRHUgJ+AThg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "590dca43-d64f-48db-afb5-25a1052109ff",
+                            SecurityStamp = "86d9cc00-1799-4413-8a3c-bfba31e6948c",
                             TwoFactorEnabled = false,
                             UserName = "admin@TManager.com"
                         },
@@ -227,15 +227,15 @@ namespace TicketManager.Data.Migrations
                         {
                             Id = "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f02d0b93-e39c-4e3d-b11e-82e661e5d6c9",
+                            ConcurrencyStamp = "09e518c2-d445-45ad-9dd1-30d0167d3973",
                             Email = "manager@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "MANAGER@TMANAGER.COM",
                             NormalizedUserName = "MANAGER@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENPprWPWY7xfTf+MJxmjbicrp8SHuy/n8RvKCn9tmlSDcUsZqY6vtR2TQkKmNOx9wA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAulT/FvYx+shbpauM7Si/V5ojobicnfzV3QkAq86CCLPnbAygogPS036i2/fpcVkQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "60966d7e-6f80-4a09-806f-299b70633a43",
+                            SecurityStamp = "1c8bd978-ca1c-4a85-ae9e-b3339f214825",
                             TwoFactorEnabled = false,
                             UserName = "manager@TManager.com"
                         },
@@ -243,15 +243,15 @@ namespace TicketManager.Data.Migrations
                         {
                             Id = "b3102d7f-82cb-470c-88d3-a299a1e8c1b9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bdff56ba-0d5e-4b06-92da-9eca9a634fe0",
+                            ConcurrencyStamp = "747308ac-d9b5-492f-9507-235e7d42ba41",
                             Email = "user@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@TMANAGER.COM",
                             NormalizedUserName = "USER@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFy0wsXm3iSoX9QwcdyEjdMghUCdGpZsfGSzn0+vjD1GsV+9pAbO2PgnYsAZ8FnMSw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAJIVNyJSmsR/TCHhviax6kU61a8RkaZYh+0vUxh9/eQIb04IU56qqNPSYt0LiBT4Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e26b13c6-ea92-4fa0-b71c-5638b7edd9d1",
+                            SecurityStamp = "6c0465fe-27c2-4880-b867-735ef50bcf3c",
                             TwoFactorEnabled = false,
                             UserName = "user@TManager.com"
                         });
@@ -390,44 +390,6 @@ namespace TicketManager.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Events");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuthorId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
-                            CategoryId = 1,
-                            CreatedOn = new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "An outdoor music festival with top artists and bands.",
-                            IsDeleted = false,
-                            Name = "Summer Music Festival",
-                            TicketPrice = 50.00m,
-                            TotalTickets = 1000
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AuthorId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
-                            CategoryId = 2,
-                            CreatedOn = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Annual city marathon open for all participants.",
-                            IsDeleted = false,
-                            Name = "City Marathon",
-                            TicketPrice = 30.00m,
-                            TotalTickets = 500
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AuthorId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
-                            CategoryId = 4,
-                            CreatedOn = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Latest trends and talks in technology and innovation.",
-                            IsDeleted = false,
-                            Name = "Tech Conference 2025",
-                            TicketPrice = 120.00m,
-                            TotalTickets = 300
-                        });
                 });
 
             modelBuilder.Entity("TicketManager.Data.Models.Order", b =>
@@ -586,7 +548,7 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

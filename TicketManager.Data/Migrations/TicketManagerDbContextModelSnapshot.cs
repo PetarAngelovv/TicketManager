@@ -96,9 +96,21 @@ namespace TicketManager.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a1b2c3d4-5678-1234-abcd-1234567890ab",
+                            Id = "9d98f75a-68cb-4b56-a6b8-b4b2a7061a9f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "1a2b3c4d-73e1-4f8f-8f1f-6736cfe1a00b",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "2b3c4d5e-82cb-470c-88d3-a299a1e8c1b9",
+                            Name = "User",
+                            NormalizedName = "USER"
                         });
                 });
 
@@ -194,19 +206,51 @@ namespace TicketManager.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "df1c3a0f-1234-4cde-bb55-d5f15a6aabcd",
+                            Id = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "63c995db-0d83-4359-a13c-f6026311ded3",
+                            ConcurrencyStamp = "7ff2c1bf-e08c-4051-91e5-dd069dbc3af5",
                             Email = "admin@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TMANAGER.COM",
                             NormalizedUserName = "ADMIN@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKDJihR3RcLGksvX93YCxFrmwcswVy7TpBi4ET91xwan7M0P7xBUEZzGJzxbcoHOpA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE8Reef5oeCQJKyrVD7oxlSibScueoLr1wnDO1vzELT32W0Tl4oekfxWRHUgJ+AThg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "78474360-359a-43dc-82fa-b903eb87c12c",
+                            SecurityStamp = "86d9cc00-1799-4413-8a3c-bfba31e6948c",
                             TwoFactorEnabled = false,
                             UserName = "admin@TManager.com"
+                        },
+                        new
+                        {
+                            Id = "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "09e518c2-d445-45ad-9dd1-30d0167d3973",
+                            Email = "manager@TManager.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MANAGER@TMANAGER.COM",
+                            NormalizedUserName = "MANAGER@TMANAGER.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAulT/FvYx+shbpauM7Si/V5ojobicnfzV3QkAq86CCLPnbAygogPS036i2/fpcVkQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "1c8bd978-ca1c-4a85-ae9e-b3339f214825",
+                            TwoFactorEnabled = false,
+                            UserName = "manager@TManager.com"
+                        },
+                        new
+                        {
+                            Id = "b3102d7f-82cb-470c-88d3-a299a1e8c1b9",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "747308ac-d9b5-492f-9507-235e7d42ba41",
+                            Email = "user@TManager.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER@TMANAGER.COM",
+                            NormalizedUserName = "USER@TMANAGER.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAJIVNyJSmsR/TCHhviax6kU61a8RkaZYh+0vUxh9/eQIb04IU56qqNPSYt0LiBT4Q==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "6c0465fe-27c2-4880-b867-735ef50bcf3c",
+                            TwoFactorEnabled = false,
+                            UserName = "user@TManager.com"
                         });
                 });
 
@@ -343,44 +387,6 @@ namespace TicketManager.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Events");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AuthorId = "cb79d2b9-3231-408b-83d3-30c6879aa313",
-                            CategoryId = 1,
-                            CreatedOn = new DateTime(2025, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "An outdoor music festival with top artists and bands.",
-                            IsDeleted = false,
-                            Name = "Summer Music Festival",
-                            TicketPrice = 50.00m,
-                            TotalTickets = 1000
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AuthorId = "929dbb49-522c-4f84-a486-5d11e35fd7fc",
-                            CategoryId = 2,
-                            CreatedOn = new DateTime(2025, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Annual city marathon open for all participants.",
-                            IsDeleted = false,
-                            Name = "City Marathon",
-                            TicketPrice = 30.00m,
-                            TotalTickets = 500
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AuthorId = "1d48e3d2-08e1-4162-8c51-65f0723a017f",
-                            CategoryId = 4,
-                            CreatedOn = new DateTime(2025, 11, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Latest trends and talks in technology and innovation.",
-                            IsDeleted = false,
-                            Name = "Tech Conference 2025",
-                            TicketPrice = 120.00m,
-                            TotalTickets = 300
-                        });
                 });
 
             modelBuilder.Entity("TicketManager.Data.Models.Order", b =>
@@ -550,13 +556,13 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("TicketManager.Data.Models.Order", "Order")
                         .WithMany("OrderTickets")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TicketManager.Data.Models.Ticket", "Ticket")
                         .WithMany("OrderTickets")
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -569,7 +575,7 @@ namespace TicketManager.Data.Migrations
                     b.HasOne("TicketManager.Data.Models.Event", "Event")
                         .WithMany("Tickets")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");

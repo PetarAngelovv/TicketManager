@@ -38,7 +38,7 @@ namespace TicketManager.Data.Migrations
                 name: "AuthorId",
                 table: "Events",
                 type: "nvarchar(450)",
-                nullable: false,
+                nullable: true,
                 defaultValue: "");
 
             migrationBuilder.AddColumn<string>(
@@ -74,9 +74,9 @@ namespace TicketManager.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1a2b3c4d-73e1-4f8f-8f1f-6736cfe1a00b", null, "Manager", "MANAGER" },
-                    { "2b3c4d5e-82cb-470c-88d3-a299a1e8c1b9", null, "User", "USER" },
-                    { "9d98f75a-68cb-4b56-a6b8-b4b2a7061a9f", null, "Admin", "ADMIN" }
+            { "1a2b3c4d-73e1-4f8f-8f1f-6736cfe1a00b", null, "Manager", "MANAGER" },
+            { "2b3c4d5e-82cb-470c-88d3-a299a1e8c1b9", null, "User", "USER" },
+            { "9d98f75a-68cb-4b56-a6b8-b4b2a7061a9f", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
@@ -84,31 +84,10 @@ namespace TicketManager.Data.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "b3102d7f-82cb-470c-88d3-a299a1e8c1b9", 0, "5916546b-da9c-4f53-b952-022fe6c8fe81", "user@TManager.com", true, false, null, "USER@TMANAGER.COM", "USER@TMANAGER.COM", "AQAAAAIAAYagAAAAELmDGs6dnuItSs7dClrdxm1+MG95vAxg7q6Ezcj2+Z8EWEjyCC2nxOYcKegEbm0AQw==", null, false, "f24e6608-b03d-46ba-9cc0-b714ca5aed92", false, "user@TManager.com" },
-                    { "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b", 0, "ec1a5ca4-c32c-45ad-90df-e29862bcf2e9", "manager@TManager.com", true, false, null, "MANAGER@TMANAGER.COM", "MANAGER@TMANAGER.COM", "AQAAAAIAAYagAAAAEGbEELRoSGlT2i4pNT6pCPUb3CkfVqnP0m0ulioM9KGSzPLUB/cyPZP+CyzKc8R4hQ==", null, false, "8191db06-d8be-420e-86e8-b3c4fcc329c1", false, "manager@TManager.com" },
-                    { "fcf6a048-50ce-4fd6-a89b-2d95c88e607a", 0, "c8a7d16c-9d16-4f7d-9bc8-2c126af365e6", "admin@TManager.com", true, false, null, "ADMIN@TMANAGER.COM", "ADMIN@TMANAGER.COM", "AQAAAAIAAYagAAAAEME14QEIbUqQlUZBPBeDT89KGvCoHIfP14c04AeHnPN4Bz1V7JmGzUrEOH5EbRhU2w==", null, false, "452a25a3-c2a0-4ea5-82e3-7ac91fb0f5bf", false, "admin@TManager.com" }
+            { "b3102d7f-82cb-470c-88d3-a299a1e8c1b9", 0, "5916546b-da9c-4f53-b952-022fe6c8fe81", "user@TManager.com", true, false, null, "USER@TMANAGER.COM", "USER@TMANAGER.COM", "AQAAAAIAAYagAAAAELmDGs6dnuItSs7dClrdxm1+MG95vAxg7q6Ezcj2+Z8EWEjyCC2nxOYcKegEbm0AQw==", null, false, "f24e6608-b03d-46ba-9cc0-b714ca5aed92", false, "user@TManager.com" },
+            { "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b", 0, "ec1a5ca4-c32c-45ad-90df-e29862bcf2e9", "manager@TManager.com", true, false, null, "MANAGER@TMANAGER.COM", "MANAGER@TMANAGER.COM", "AQAAAAIAAYagAAAAEGbEELRoSGlT2i4pNT6pCPUb3CkfVqnP0m0ulioM9KGSzPLUB/cyPZP+CyzKc8R4hQ==", null, false, "8191db06-d8be-420e-86e8-b3c4fcc329c1", false, "manager@TManager.com" },
+            { "fcf6a048-50ce-4fd6-a89b-2d95c88e607a", 0, "c8a7d16c-9d16-4f7d-9bc8-2c126af365e6", "admin@TManager.com", true, false, null, "ADMIN@TMANAGER.COM", "ADMIN@TMANAGER.COM", "AQAAAAIAAYagAAAAEME14QEIbUqQlUZBPBeDT89KGvCoHIfP14c04AeHnPN4Bz1V7JmGzUrEOH5EbRhU2w==", null, false, "452a25a3-c2a0-4ea5-82e3-7ac91fb0f5bf", false, "admin@TManager.com" }
                 });
-
-            migrationBuilder.UpdateData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: 1,
-                columns: new[] { "AuthorId", "ImageUrl" },
-                values: new object[] { "fcf6a048-50ce-4fd6-a89b-2d95c88e607a", null });
-
-            migrationBuilder.UpdateData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: 2,
-                columns: new[] { "AuthorId", "ImageUrl" },
-                values: new object[] { "fcf6a048-50ce-4fd6-a89b-2d95c88e607a", null });
-
-            migrationBuilder.UpdateData(
-                table: "Events",
-                keyColumn: "Id",
-                keyValue: 3,
-                columns: new[] { "AuthorId", "ImageUrl" },
-                values: new object[] { "fcf6a048-50ce-4fd6-a89b-2d95c88e607a", null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_AuthorId",
@@ -248,5 +227,6 @@ namespace TicketManager.Data.Migrations
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
+
     }
 }

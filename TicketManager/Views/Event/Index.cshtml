@@ -158,18 +158,25 @@
                 });
         });
 
-        function updateTicketsLeft(eventId) {
+            function updateTicketsLeft(eventId) {
             fetch(`/Event/GetTicketsLeft?id=${eventId}`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log(`Tickets left data for event ${eventId}:`, data);
                     if (data.success) {
                         const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
                         if (ticketsLeftElement) {
                             ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
+                        } else {
+                            console.warn(`Element with id tickets-left-${eventId} not found!`);
                         }
+                    } else {
+                        console.error('Failed to get tickets left:', data.message);
                     }
-                });
+                })
+                .catch(error => console.error('Error fetching tickets left:', error));
         }
+
 
         $(document).ready(function () {
             loadEvents(1);

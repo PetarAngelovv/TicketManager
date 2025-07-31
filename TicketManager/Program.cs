@@ -1,4 +1,4 @@
-﻿reposusing Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TicketManager.Data;
 using TicketManager.Services;
@@ -55,9 +55,9 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<TicketManagerDbContext>();
     context.Database.EnsureCreated();
 
-    var roleSeeder = services.GetRequiredService<IRoleSeederService>();
-    await roleSeeder.SeedRolesAsync();
-    await roleSeeder.SeedAdminAsync();
+    var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleSeederService>();
+    await roleSeeder.SeedAsync();
+    
 }
 
 // Configure the HTTP request pipeline.

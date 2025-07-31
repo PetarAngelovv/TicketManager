@@ -1,51 +1,63 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using TicketManager.Services.Contracts;
 
-public class RoleSeederService : IRoleSeederService
+namespace TicketManager.Services
 {
-    private readonly RoleManager<IdentityRole> roleManager;
-    private readonly UserManager<IdentityUser> userManager;
-
-    private readonly string[] rolesToSeed = new[] { "Admin", "Manager", "User" };
-
-    public RoleSeederService(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
+    public class RoleSeederService : IRoleSeederService
     {
-        this.roleManager = roleManager;
-        this.userManager = userManager;
-    }
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly UserManager<IdentityUser> userManager;
 
-    public async Task SeedRolesAsync()
-    {
-        foreach (var role in rolesToSeed)
+        public RoleSeederService(RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
         {
-            if (!await roleManager.RoleExistsAsync(role))
+            this.roleManager = roleManager;
+            this.userManager = userManager;
+        }
+
+        public async Task SeedAsync()
+        {
+            // 1. Създаваме роли
+            string[] roles = { "Admin", "Manager", "User" };
+
+            foreach (var role in roles)
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
             }
+
+            // 2. Създаваме потребители
+            await EnsureUserAsync("admin@TManager.com", "Admin123!", "Admin");
+            await EnsureUserAsync("manager@TManager.com", "Manager123!", "Manager");
+            await EnsureUserAsync("user@TManager.com", "User123!", "User");
         }
-    }
-    public async Task SeedAdminAsync()
-    {
-        var adminEmail = "admin@TManager.com";
-        var adminPassword = "Admin123!";
 
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-        if (adminUser == null)
+        private async Task EnsureUserAsync(string email, string password, string role)
         {
-            adminUser = new IdentityUser
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null)
             {
-                UserName = adminEmail,
-                Email = adminEmail,
-                EmailConfirmed = true
-            };
+                user = new IdentityUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true
+                };
 
-            await userManager.CreateAsync(adminUser, adminPassword);
-        }
+                var result = await userManager.CreateAsync(user, password);
 
-        if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
-        {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"User creation failed {email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                }
+            }
+
+            if (!await userManager.IsInRoleAsync(user, role))
+            {
+                await userManager.AddToRoleAsync(user, role);
+            }
         }
     }
 }

@@ -25,7 +25,6 @@ namespace TicketManager.Data.Configurations
             builder.Property(e => e.TicketPrice)
                 .IsRequired()
                 .HasPrecision(18, 2)
-
                 .HasColumnType("decimal(18,2)");
 
             builder.Property(e => e.TotalTickets)
@@ -37,17 +36,19 @@ namespace TicketManager.Data.Configurations
             builder.HasMany(e => e.Tickets)
                 .WithOne(t => t.Event)
                 .HasForeignKey(t => t.EventId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(e => e.Category)
                 .WithMany(c => c.Events)
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasQueryFilter(b => b.IsDeleted == false);    
+            builder.HasQueryFilter(b => b.IsDeleted == false);
+
             builder.HasData(GenerateSeedEvents());
         }
-    private List<Event> GenerateSeedEvents()
+
+        private List<Event> GenerateSeedEvents()
     {
         const string adminId = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a";
 

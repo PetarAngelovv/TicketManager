@@ -175,7 +175,6 @@ public class EventService : IEventService
         {
             bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
 
-            // Ако не е админ, трябва да е автор на събитието
             if (isAdmin || _event.AuthorId.ToLower() == userId.ToLower())
             {
                 _event.IsDeleted = true;

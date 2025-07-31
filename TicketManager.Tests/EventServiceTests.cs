@@ -73,8 +73,8 @@ namespace TicketManager.Tests
 
             Assert.IsTrue(result);
             Assert.AreEqual(1, db.Events.Count());
-            Assert.AreEqual(100, db.Tickets.Count(), "Трябва да се създадат 100 тикета.");
-            Assert.AreEqual(1, db.Categories.Count()); // Ensure category exists
+            Assert.AreEqual(100, db.Tickets.Count(), "100 tickets need to be created.");
+            Assert.AreEqual(1, db.Categories.Count());
 
         }
 
@@ -265,7 +265,7 @@ namespace TicketManager.Tests
             await db.SaveChangesAsync();
 
             var userManagerMock = GetUserManagerMock(user);
-            var service = new EventService(db, userManagerMock.Object); // Inject the mock
+            var service = new EventService(db, userManagerMock.Object);
 
             var input = new EventDeleteInputModel { Id = 1, Name = "SoftDelete" };
             var result = await service.SoftDeleteEventAsync(user.Id, input);
@@ -558,7 +558,6 @@ namespace TicketManager.Tests
             };
             db.Events.Add(ev);
 
-            // Добавяме 2 продадени тикета => 1 остава
             db.Tickets.Add(new Ticket { EventId = 1, IsSold = true });
             db.Tickets.Add(new Ticket { EventId = 1, IsSold = true });
             db.Tickets.Add(new Ticket { EventId = 1, IsSold = false });

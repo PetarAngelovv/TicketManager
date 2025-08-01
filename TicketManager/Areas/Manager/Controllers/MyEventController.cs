@@ -47,6 +47,7 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EventCreateInputModel inputModel)
         {
             if (!ModelState.IsValid)
@@ -88,6 +89,7 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EventEditInputModel inputModel)
         {
             if (!ModelState.IsValid)
@@ -114,6 +116,7 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDelete(EventDeleteInputModel inputModel)
         {
             if (!ModelState.IsValid)

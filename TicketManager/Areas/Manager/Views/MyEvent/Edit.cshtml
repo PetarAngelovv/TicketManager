@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "Edit Event";
 }
-
+<form id="antiForgeryForm">
+    @Html.AntiForgeryToken()
+</form>
 <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
     <h2>@ViewData["Title"]</h2>
 </div>

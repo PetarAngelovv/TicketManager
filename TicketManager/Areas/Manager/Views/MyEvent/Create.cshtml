@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "Create New Event";
 }
-
+<form id="antiForgeryForm">
+    @Html.AntiForgeryToken()
+</form>
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">

@@ -38,6 +38,12 @@ namespace TicketManager.Web.Controllers
                     .Take(pageSize)
                     .ToList();
 
+                // Update TicketsLeft for each event
+                foreach (var ev in pagedEvents)
+                {
+                    ev.TicketsLeft = await _eventService.GetTicketsLeftAsync(ev.Id);
+                }
+
                 var viewModel = new PaginatedEventsViewModel
                 {
                     Events = pagedEvents,
@@ -53,6 +59,7 @@ namespace TicketManager.Web.Controllers
                 return this.RedirectToAction(nameof(Index), "Home");
             }
         }
+
 
 
         [HttpGet]
@@ -206,28 +213,40 @@ namespace TicketManager.Web.Controllers
                 return Json(new { success = false, message = "Unable to fetch tickets left." });
             }
         }
-        public async Task<IActionResult> Search(string? term, int? categoryId, int page = 1, int pageSize = 6)
+        [HttpGet]
+        public async Task<IActionResult> Search(string term = "", int? categoryId = null, int page = 1, int pageSize = 6)
         {
-            string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
-            var results = await _eventService.SearchEventsAsync(term, categoryId, userId);
-
-            int totalItems = results.Count();
-            var pagedResults = results
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            var model = new PaginatedEventsViewModel
+            try
             {
-                Events = pagedResults,
-                CurrentPage = page,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
-                SearchTerm = term,
-                CategoryId = categoryId
-            };
+                string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
+                IEnumerable<EventIndexViewModel> filteredEvents = await _eventService.SearchEventsAsync(term, categoryId, userId);
 
-            return PartialView("EventListPartial", model);
+                int totalItems = filteredEvents.Count();
+                var pagedEvents = filteredEvents
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                foreach (var ev in pagedEvents)
+                {
+                    ev.TicketsLeft = await _eventService.GetTicketsLeftAsync(ev.Id);
+                }
+
+                var viewModel = new PaginatedEventsViewModel
+                {
+                    Events = pagedEvents,
+                    CurrentPage = page,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                };
+
+                return PartialView("EventListPartial", viewModel);
+            }
+            catch (Exception ex)
+            {
+                return PartialView("EventListPartial", new PaginatedEventsViewModel());
+            }
         }
+
 
 
     }

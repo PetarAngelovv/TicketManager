@@ -134,22 +134,5 @@ namespace TicketManager.Web.Areas.Manager.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> HardDelete(int id)
-        {
-            bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id);
-
-            if (!result)
-            {
-                TempData["ErrorMessage"] = "Hard deletion failed.";
-                return RedirectToAction("Details", new { id });
-            }
-
-            TempData["SuccessMessage"] = "Event permanently deleted.";
-            return RedirectToAction("Index");
-        }
-
     }
 }

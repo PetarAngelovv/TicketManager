@@ -91,40 +91,41 @@ public class EventService : IEventService
             .Where(t => t.EventId == eventId && !t.IsSold)
             .CountAsync();
     }
-    public async Task<EventDetailsViewModel> GetEventDetailsAsync(string userId, int? id)
+    public async Task<EventDetailsViewModel?> GetEventDetailsAsync(string userId, int? id)
     {
-        EventDetailsViewModel? detailsEventVm = null;
+        if (!id.HasValue)
+            return null;
 
-        if (id.HasValue)
+        var _event = await _context.Events
+            .Include(r => r.Category)
+            .Include(r => r.UsersEvents)
+            .Include(r => r.Author)
+            .Include(r => r.Tickets)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == id.Value);
+        // Без филтър за IsDeleted → за Admin ще виждаш и soft deleted
+
+        if (_event == null)
+            return null;
+
+        return new EventDetailsViewModel
         {
-            Event? _event = await _context.Events
-                .Include(r => r.Category)
-                .Include(r => r.UsersEvents)
-                .Include(r => r.Author)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == id.Value);
-            if (_event != null)
-            {
-                detailsEventVm = new EventDetailsViewModel()
-                {
-                    Id = _event.Id,
-                    Name = _event.Name,
-                    ImageUrl = _event.ImageUrl,
-                    CategoryName = _event.Category.Name,
-                    IsAuthor = userId != null ? _event.AuthorId.ToLower() == userId.ToLower() : false,
-                    IsSaved = _event.UsersEvents.Any(ur => userId != null ? ur.UserId.ToLower() == userId.ToLower() : false),
-                    Description = _event.Description,
-                    CreatedOn = _event.CreatedOn.ToString(CreatedOnFormat, CultureInfo.InvariantCulture),
-                    TicketPrice = _event.TicketPrice,
-                    TotalTickets = _event.TotalTickets,
-                    TicketsLeft = _event.Tickets.Count(t => !t.IsSold),
-                    Author = _event.Author.UserName
-                };
-
-            }
-        }
-        return detailsEventVm;
+            Id = _event.Id,
+            Name = _event.Name,
+            ImageUrl = _event.ImageUrl,
+            CategoryName = _event.Category.Name,
+            IsAuthor = userId != null && _event.AuthorId.Equals(userId, StringComparison.OrdinalIgnoreCase),
+            IsSaved = _event.UsersEvents.Any(ur => userId != null && ur.UserId.Equals(userId, StringComparison.OrdinalIgnoreCase)),
+            Description = _event.Description,
+            CreatedOn = _event.CreatedOn.ToString(CreatedOnFormat, CultureInfo.InvariantCulture),
+            TicketPrice = _event.TicketPrice,
+            TotalTickets = _event.TotalTickets,
+            TicketsLeft = _event.Tickets.Count(t => !t.IsSold),
+            Author = _event.Author.UserName,
+            IsDeleted = _event.IsDeleted
+        };
     }
+
     public async Task<EventDeleteInputModel?> GetEventForDeletingAsync(string? userId, int id)
     {
         bool opResult = false;
@@ -187,13 +188,24 @@ public class EventService : IEventService
     }
     public async Task<bool> HardDeleteEventAsync(string userId, int eventId)
     {
-        var eventEntity = await _context.Events.FindAsync(eventId);
-        if (eventEntity == null) return false;
+        var eventEntity = await _context.Events
+            .IgnoreQueryFilters()
+            .Include(e => e.Tickets)
+            .FirstOrDefaultAsync(e => e.Id == eventId);
+
+        if (eventEntity == null)
+            return false;
+
+        _context.Tickets.RemoveRange(eventEntity.Tickets);
 
         _context.Events.Remove(eventEntity);
+
         await _context.SaveChangesAsync();
+
         return true;
     }
+
+
     public async Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id)
     {
         EventEditInputModel? editModel = null;
@@ -429,5 +441,9 @@ public class EventService : IEventService
         availableTicket.IsSold = true;
 
         await _context.SaveChangesAsync();
+    }
+    public async Task<List<Event>> GetAllEventsForAdminAsync()
+    {
+        return await _context.Events.IgnoreQueryFilters().ToListAsync();
     }
 }

@@ -17,30 +17,40 @@ namespace TicketManager.Web.Areas.Admin.Controllers
     public class EventController : BaseController
     {
 
-        private readonly ICategoryService _ICategoryService;
-        private readonly IEventService _EventService;
+        private readonly ICategoryService _categoryService;
+        private readonly IEventService _eventService;
 
         public EventController(IEventService eventService, ICategoryService categoryService)
         {
-            _EventService = eventService;
-            _ICategoryService = categoryService;
+            _eventService = eventService;
+            _categoryService = categoryService;
         }
-     
+
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             try
             {
-                string userId = this.GetUserId();
-                IEnumerable<EventIndexViewModel> allEvents = await this._EventService.GetAllAsync(userId);
-                return this.View(allEvents.ToList());
+                var allEvents = await _eventService.GetAllEventsForAdminAsync();
+
+                var allEventsViewModels = allEvents
+                    .Select(e => new EventIndexViewModel
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        IsDeleted = e.IsDeleted
+                    })
+                    .ToList();
+
+                return View(allEventsViewModels);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return this.RedirectToAction(nameof(Index), "Home");
+                return RedirectToAction(nameof(Index), "Home");
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -50,7 +60,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                 EventCreateInputModel addEventInputModel = new EventCreateInputModel()
                 {
                     CreatedOn = DateTime.UtcNow.ToString(CreatedOnFormat, CultureInfo.InvariantCulture),
-                    Categories = await _ICategoryService.GetCategoriesDropDownAsync(),
+                    Categories = await _categoryService.GetCategoriesDropDownAsync(),
                 };
 
                 return this.View(addEventInputModel);
@@ -63,21 +73,22 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EventCreateInputModel inputModel)
         {
             try
             {
                 if (!this.ModelState.IsValid)
                 {
-                    inputModel.Categories = await _ICategoryService.GetCategoriesDropDownAsync();
+                    inputModel.Categories = await _categoryService.GetCategoriesDropDownAsync();
                     return this.View(inputModel);
                 }
-                bool addResult = await this._EventService.CreateEventAsync(this.GetUserId(), inputModel);
+                bool addResult = await this._eventService.CreateEventAsync(this.GetUserId(), inputModel);
 
                 if (addResult == false)
                 {
                     ModelState.AddModelError(string.Empty, "Fatal error occurred while Creating an Event");
-                    inputModel.Categories = await _ICategoryService.GetCategoriesDropDownAsync();
+                    inputModel.Categories = await _categoryService.GetCategoriesDropDownAsync();
                     return this.View(inputModel);
                 }
 
@@ -94,29 +105,38 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
+            if (id == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             try
             {
-                string? userId = this.GetUserId();
-                EventDetailsViewModel eventDetails = await this._EventService.GetEventDetailsAsync(userId, id);
+                string userId = this.GetUserId();
+
+                var eventDetails = await _eventService.GetEventDetailsAsync(userId, id);
+
                 if (eventDetails == null)
                 {
-                    return this.RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
                 }
-                return this.View(eventDetails);
+
+                return View(eventDetails);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return this.RedirectToAction(nameof(Index));
+                Console.WriteLine($"Error in Details: {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 string? userId = this.GetUserId();
-                EventDeleteInputModel? deleteEventInputModel = await this._EventService.GetEventForDeletingAsync(userId, id);
+                EventDeleteInputModel? deleteEventInputModel = await this._eventService.GetEventForDeletingAsync(userId, id);
 
                 if (deleteEventInputModel == null)
                 {
@@ -133,6 +153,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDelete(EventDeleteInputModel inputModel)
         {
             try
@@ -142,7 +163,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                     ModelState.AddModelError(string.Empty, "Please do not modify the page!");
                     return this.View("Delete", inputModel);
                 }
-                bool deleteResult = await this._EventService.SoftDeleteEventAsync(this.GetUserId()!, inputModel);
+                bool deleteResult = await this._eventService.SoftDeleteEventAsync(this.GetUserId()!, inputModel);
 
                 if (deleteResult == false)
                 {
@@ -159,19 +180,45 @@ namespace TicketManager.Web.Areas.Admin.Controllers
 
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> HardDelete(int id)
+        {
+            try
+            {
+                bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id);
+
+                if (!result)
+                {
+                    TempData["ErrorMessage"] = "Hard deletion failed or event not found.";
+                    return RedirectToAction("Index", new { id });
+                }
+
+                TempData["SuccessMessage"] = "Event permanently deleted.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in HardDelete: {ex.Message}");
+                TempData["ErrorMessage"] = "Unexpected error occurred while deleting event.";
+                return RedirectToAction("Details", new { id });
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             try
             {
                 string userId = this.GetUserId()!;
-                EventEditInputModel? editEventInputModel = await this._EventService.GetEventForEditingAsync(userId, id);
+                EventEditInputModel? editEventInputModel = await this._eventService.GetEventForEditingAsync(userId, id);
                 if (editEventInputModel == null)
                 {
                     return this.RedirectToAction(nameof(Index));
                 }
 
-                var categories = await _ICategoryService.GetCategoriesDropDownAsync();
+                var categories = await _categoryService.GetCategoriesDropDownAsync();
 
                 editEventInputModel.Categories = categories;
 
@@ -185,6 +232,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EventEditInputModel inputModel)
         {
             try
@@ -193,7 +241,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                 {
                     return this.View(inputModel);
                 }
-                bool editResult = await this._EventService.PersistUpdatedEventAsync(this.GetUserId()!, inputModel);
+                bool editResult = await this._eventService.PersistUpdatedEventAsync(this.GetUserId()!, inputModel);
 
                 if (editResult == false)
                 {

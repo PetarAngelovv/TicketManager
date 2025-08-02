@@ -30,6 +30,8 @@ namespace TicketManager.Data.Configurations
                 .WithOne(ot => ot.Ticket)
                 .HasForeignKey(ot => ot.TicketId)
                 .OnDelete(DeleteBehavior.NoAction);
+
         }
+      
     }
 }

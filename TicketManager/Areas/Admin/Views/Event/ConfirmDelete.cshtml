@@ -13,6 +13,7 @@
 <p>Total Tickets: @Model.TotalTickets</p>
 
 <form asp-action="ConfirmDelete" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="Name" />
     <input type="hidden" asp-for="CategoryName" />

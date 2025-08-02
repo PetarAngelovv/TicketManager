@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "User Management";
 }
-
+<form id="antiForgeryForm">
+    @Html.AntiForgeryToken()
+</form>
 <h2>User Management</h2>
 
 <table class="table">

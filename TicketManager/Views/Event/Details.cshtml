@@ -5,9 +5,9 @@
     ViewData["Title"] = "Event Details";
     Layout = "_Layout";
 }
-<form id="antiForgeryForm">
-    @Html.AntiForgeryToken()
-</form>
+
+@Html.AntiForgeryToken()
+
 <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
     <h2>@ViewData["Title"]</h2>
 </div>
@@ -68,18 +68,27 @@
     <script>
         $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
-            $.post("/Event/Buy", { id: eventId })
-                .done(function (res) {
-                    if (res.success) {
-                        alert("Ticket bought successfully!");
-                        location.reload();
-                    } else {
-                        alert(res.message);
-                    }
-                })
-                .fail(function () {
-                    alert("Something went wrong. Please try again.");
-                });
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: "/Event/Buy",
+                method: "POST",
+                data: {
+                    __RequestVerificationToken: token,
+                    id: eventId
+                }
+            })
+            .done(function (res) {
+                if (res.success) {
+                    alert("Ticket bought successfully!");
+                    location.reload();
+                } else {
+                    alert(res.message);
+                }
+            })
+            .fail(function () {
+                alert("Something went wrong. Please try again.");
+            });
         });
     </script>
 }

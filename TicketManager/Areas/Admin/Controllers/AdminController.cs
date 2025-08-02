@@ -18,6 +18,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddManagerRole(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -29,7 +30,9 @@ namespace TicketManager.Web.Areas.Admin.Controllers
             return RedirectToAction("Index", "UserManagement", new { area = "Admin" });
 
         }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveManagerRole(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);

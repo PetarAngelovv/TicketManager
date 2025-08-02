@@ -9,5 +9,6 @@
         public decimal TicketPrice { get; set; }
         public int TotalTickets { get; set; }
         public int TicketsLeft { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

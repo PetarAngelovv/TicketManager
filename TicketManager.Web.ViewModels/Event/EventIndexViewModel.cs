@@ -4,5 +4,6 @@
     {
         public int SavedCount { get; set; }
         public int TicketsLeft { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

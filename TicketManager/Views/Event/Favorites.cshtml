@@ -11,7 +11,6 @@
 </div>
 <hr />
 
-<!-- AntiForgery Token за AJAX -->
 @Html.AntiForgeryToken()
 
 @if (Model == null || !Model.Any())
@@ -48,33 +47,33 @@ else
                     <i class="fas fa-trash-alt"></i> Remove
                 </button>
             </div>
-
         </div>
     }
 }
 
- <div class="text-center mt-5">
-     <a asp-controller="Event" asp-action="Index" class="btn btn-primary mt-3">
-         <i class="fas fa-arrow-left"></i> Back to Events
-     </a>
- </div>
+<div class="text-center mt-5">
+    <a asp-controller="Event" asp-action="Index" class="btn btn-primary mt-3">
+        <i class="fas fa-arrow-left"></i> Back to Events
+    </a>
+</div>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             $(".btn-remove").click(function () {
                 const button = $(this);
                 const eventId = button.data("event-id");
+                const token = $('input[name="__RequestVerificationToken"]').val();
 
                 $.ajax({
                     url: "/Event/Remove",
                     method: "POST",
                     data: {
                         id: eventId,
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        __RequestVerificationToken: token
                     },
                     success: function (response) {
                         if (response.success) {
-                            // Премахване на целия ред
                             button.closest(".row").fadeOut(300, function () {
                                 $(this).remove();
                             });
@@ -90,4 +89,3 @@ else
         });
     </script>
 }
-

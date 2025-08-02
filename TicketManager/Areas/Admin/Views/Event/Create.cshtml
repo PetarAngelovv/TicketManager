@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Create New Event";
 }
-
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -12,6 +11,7 @@
                     <h1 class="section-title mb-4">Create New Event</h1>
 
                     <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label asp-for="Name" class="form-label">Event Name</label>

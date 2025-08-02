@@ -56,7 +56,7 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 
     var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleSeederService>();
-    await roleSeeder.SeedAsync();
+   await roleSeeder.SeedAsync();
     
 }
 

@@ -1,4 +1,6 @@
-﻿using TicketManager.Web.ViewModels.Event;
+﻿using Microsoft.EntityFrameworkCore;
+using TicketManager.Data.Models;
+using TicketManager.Web.ViewModels.Event;
 
 namespace TicketManager.Services.Contracts
 {
@@ -19,5 +21,7 @@ namespace TicketManager.Services.Contracts
             Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, int? categoryId, string? userId);
             Task BuyTicketAsync(int eventId, string userId);
             Task<int> GetTicketsLeftAsync(int eventId);
+            Task<List<Event>> GetAllEventsForAdminAsync();
+
     }
 }

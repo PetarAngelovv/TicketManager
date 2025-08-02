@@ -16,7 +16,6 @@ namespace TicketManager.Services
 
         public async Task SeedAsync()
         {
-            // 1. Създаваме роли
             string[] roles = { "Admin", "Manager", "User" };
 
             foreach (var role in roles)
@@ -27,7 +26,6 @@ namespace TicketManager.Services
                 }
             }
 
-            // 2. Създаваме потребители
             await EnsureUserAsync("admin@TManager.com", "Admin123!", "Admin");
             await EnsureUserAsync("manager@TManager.com", "Manager123!", "Manager");
             await EnsureUserAsync("user@TManager.com", "User123!", "User");

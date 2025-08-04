@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Confirm Delete";
+    Layout = "_Layout";
 }
 <h2>Are you sure you want to delete this event?</h2>
 
@@ -12,7 +13,6 @@
 <p>Total Tickets: @Model.TotalTickets</p>
 
 <form asp-area="Manager" asp-controller="MyEvent" asp-action="ConfirmDelete" method="post">
-    @Html.AntiForgeryToken()
 
     <input type="hidden" asp-for="Id"/>
     <input type="hidden" asp-for="Name"/>

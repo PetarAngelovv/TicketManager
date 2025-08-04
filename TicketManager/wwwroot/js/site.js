@@ -254,52 +254,70 @@ document.addEventListener('DOMContentLoaded', function () {
         // In a real application, you would:
         // window.location.href = '/favorites';
     }
+    $(function () {
+        // 🌟 Anti-forgery setup
+        const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
 
-    // Add sparkle effects on card hover
-    document.querySelectorAll('.elegant-card').forEach(card => {
-        card.addEventListener('mouseenter', function () {
-            if (!this.querySelector('.card-sparkles')) {
-                const sparkles = document.createElement('div');
-                sparkles.className = 'card-sparkles';
-                sparkles.innerHTML = `
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (settings.type === "POST") {
+                    // Attach token as header
+                    xhr.setRequestHeader("RequestVerificationToken", token);
+
+                    // Also attach token in form body if data is an object
+                    if (typeof settings.data === "object") {
+                        settings.data.__RequestVerificationToken = token;
+                    }
+                }
+            }
+        });
+
+        // ✨ Sparkle effects on card hover
+        document.querySelectorAll('.elegant-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                if (!this.querySelector('.card-sparkles')) {
+                    const sparkles = document.createElement('div');
+                    sparkles.className = 'card-sparkles';
+                    sparkles.innerHTML = `
                     <div class="sparkle sparkle-1">✨</div>
                     <div class="sparkle sparkle-2">🌟</div>
                     <div class="sparkle sparkle-3">⭐</div>
                 `;
-                this.appendChild(sparkles);
-            }
+                    this.appendChild(sparkles);
+                }
+            });
+
+            card.addEventListener('mouseleave', function () {
+                const sparkles = this.querySelector('.card-sparkles');
+                if (sparkles) {
+                    sparkles.remove();
+                }
+            });
         });
 
-        card.addEventListener('mouseleave', function () {
-            const sparkles = this.querySelector('.card-sparkles');
-            if (sparkles) {
-                sparkles.remove();
-            }
+        // 🧭 Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
-    });
 
-    // Add smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
+        // 🖼️ Loading animation for images
+        document.querySelectorAll('.card-image').forEach(img => {
+            img.addEventListener('load', function () {
+                this.style.opacity = '0';
+                this.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    this.style.opacity = '1';
+                }, 100);
+            });
         });
     });
-
-    // Add loading animation for images
-    document.querySelectorAll('.card-image').forEach(img => {
-        img.addEventListener('load', function () {
-            this.style.opacity = '0';
-            this.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-                this.style.opacity = '1';
-            }, 100);
-        });
-    });
-});
+})

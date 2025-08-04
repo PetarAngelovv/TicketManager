@@ -11,8 +11,6 @@
 </div>
 <hr />
 
-@Html.AntiForgeryToken()
-
 @if (Model == null || !Model.Any())
 {
     <div class="text-center mt-5">
@@ -63,7 +61,7 @@ else
             $(".btn-remove").click(function () {
                 const button = $(this);
                 const eventId = button.data("event-id");
-                const token = $('input[name="__RequestVerificationToken"]').val();
+                const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
 
                 $.ajax({
                     url: "/Event/Remove",
@@ -71,6 +69,7 @@ else
                     data: {
                         id: eventId,
                         __RequestVerificationToken: token
+
                     },
                     success: function (response) {
                         if (response.success) {

@@ -91,19 +91,20 @@ public class EventService : IEventService
             .Where(t => t.EventId == eventId && !t.IsSold)
             .CountAsync();
     }
+
     public async Task<EventDetailsViewModel?> GetEventDetailsAsync(string userId, int? id)
     {
         if (!id.HasValue)
             return null;
 
         var _event = await _context.Events
+            .IgnoreQueryFilters()
             .Include(r => r.Category)
             .Include(r => r.UsersEvents)
             .Include(r => r.Author)
             .Include(r => r.Tickets)
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id.Value);
-        // Без филтър за IsDeleted → за Admin ще виждаш и soft deleted
 
         if (_event == null)
             return null;
@@ -125,6 +126,7 @@ public class EventService : IEventService
             IsDeleted = _event.IsDeleted
         };
     }
+
 
     public async Task<EventDeleteInputModel?> GetEventForDeletingAsync(string? userId, int id)
     {
@@ -206,17 +208,17 @@ public class EventService : IEventService
     }
 
 
-    public async Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id)
+    public async Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id, bool isAdmin)
     {
         EventEditInputModel? editModel = null;
 
         if (id != null)
         {
             Event? eventToEdit = await this._context.Events
-            .AsNoTracking()
-            .SingleOrDefaultAsync(r => r.Id == id);
+                .AsNoTracking()
+                .SingleOrDefaultAsync(r => r.Id == id);
 
-            if (eventToEdit != null && eventToEdit.AuthorId.ToLower() == userId.ToLower())
+            if (eventToEdit != null && (isAdmin || eventToEdit.AuthorId.ToLower() == userId.ToLower()))
             {
                 editModel = new EventEditInputModel()
                 {
@@ -225,52 +227,54 @@ public class EventService : IEventService
                     Description = eventToEdit.Description,
                     ImageUrl = eventToEdit.ImageUrl,
                     CreatedOn = eventToEdit.CreatedOn.ToString(CreatedOnFormat, CultureInfo.InvariantCulture),
-                    CategoryId = eventToEdit.CategoryId, 
+                    CategoryId = eventToEdit.CategoryId,
                     TotalTickets = eventToEdit.TotalTickets,
                     TicketPrice = eventToEdit.TicketPrice
                 };
             }
-
         }
+
+
         return editModel;
     }
-    public async Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel)
- {
-     if (string.IsNullOrWhiteSpace(userId) || inputModel == null)
-         return false;
+    public async Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel, bool isAdmin)
+    {
+        if (string.IsNullOrWhiteSpace(userId) || inputModel == null)
+            return false;
 
-     var user = await _userManager.FindByIdAsync(userId);
-     if (user == null)
-         return false;
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return false;
 
-     var ev = await _context.Events.FindAsync(inputModel.Id);
-     if (ev == null || !string.Equals(ev.AuthorId, userId, StringComparison.OrdinalIgnoreCase))
-         return false;
+        var ev = await _context.Events.FindAsync(inputModel.Id);
+        if (ev == null || (!isAdmin && !string.Equals(ev.AuthorId, userId, StringComparison.OrdinalIgnoreCase)))
+            return false;
 
-     var category = await _context.Categories.FindAsync(inputModel.CategoryId);
-     if (category == null)
-         return false;
+        var category = await _context.Categories.FindAsync(inputModel.CategoryId);
+        if (category == null)
+            return false;
 
-     if (!DateTime.TryParseExact(
-             inputModel.CreatedOn,
-             CreatedOnFormat,
-             CultureInfo.InvariantCulture,
-             DateTimeStyles.None,
-             out DateTime createdOnParsed))
-             return false;
+        if (!DateTime.TryParseExact(
+                inputModel.CreatedOn,
+                CreatedOnFormat,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime createdOnParsed))
+            return false;
 
-         ev.Name = inputModel.Name;
-         ev.Description = inputModel.Description;
-         ev.TicketPrice = inputModel.TicketPrice;
-         ev.TotalTickets = inputModel.TotalTickets;
-         ev.ImageUrl = inputModel.ImageUrl;
-         ev.CategoryId = category.Id;
-         ev.Category = category;
-         ev.CreatedOn = createdOnParsed;
+        ev.Name = inputModel.Name;
+        ev.Description = inputModel.Description;
+        ev.TicketPrice = inputModel.TicketPrice;
+        ev.TotalTickets = inputModel.TotalTickets;
+        ev.ImageUrl = inputModel.ImageUrl;
+        ev.CategoryId = category.Id;
+        ev.Category = category;
+        ev.CreatedOn = createdOnParsed;
 
-         await _context.SaveChangesAsync();
-         return true;
- }
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<IEnumerable<EventFavoriteViewModel>> GetFavoriteEventAsync(string userId)
     {
         IEnumerable<EventFavoriteViewModel>? favEvents = null;

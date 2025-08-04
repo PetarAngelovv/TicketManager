@@ -8,8 +8,6 @@
 
 <div class="container mt-5">
 
-    @Html.AntiForgeryToken()
-
     <h2 class="mb-4 text-center">🎟️ All Events</h2>
 
     <!-- Filter by Category -->
@@ -38,6 +36,20 @@
         </a>
     </div>
 
+    <!-- Request Account Deletion Button -->
+    <div class="text-center mt-4">
+        <form id="deleteRequestForm" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger w-100 mt-2">
+                🗑️ Request Account Deletion
+            </button>
+        </form>
+
+        <div id="deleteRequestMessage" class="mt-2 text-success" style="display:none;">
+            ✅ Your deletion request has been sent to the admin.
+        </div>
+    </div>
+
     <!-- Modal -->
     <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -54,7 +66,6 @@
 </div>
 
 @section Scripts {
-
     <script>
         const antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
 
@@ -109,6 +120,59 @@
                 });
         });
 
+        // Buy Ticket
+        $(document).on('click', '.buy-ticket-btn', function () {
+            const eventId = $(this).data('event-id');
+
+            fetch(`/Event/Buy?id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ Ticket purchased!');
+                        updateTicketsLeft(eventId);
+                    } else {
+                        alert('❌ ' + data.message);
+                    }
+                });
+        });
+
+        function updateTicketsLeft(eventId) {
+            fetch(`/Event/GetTicketsLeft?id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
+                        if (ticketsLeftElement) {
+                            ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching tickets left:', error));
+        }
+
+        // Account Deletion Request
+        $('#deleteRequestForm').submit(function (e) {
+            e.preventDefault();
+
+            if (!confirm("Are you sure you want to request account deletion?")) return;
+
+            $.ajax({
+                url: '/User/RequestDelete',
+                type: 'POST',
+                success: function (response) {
+                    if (response.success) {
+                        $('#deleteRequestMessage').show();
+                        $('#deleteRequestForm button').prop('disabled', true).text('Request Sent');
+                    } else {
+                        alert('❌ ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('❌ Something went wrong while sending the request.');
+                }
+            });
+        });
+
         // Load events with search, filter and page
         function loadEvents(page = 1) {
             let term = $('#eventSearchInput').val();
@@ -141,36 +205,6 @@
             let page = $(this).data('page');
             loadEvents(page);
         });
-
-        // Buy Ticket
-        $(document).on('click', '.buy-ticket-btn', function () {
-            const eventId = $(this).data('event-id');
-
-            fetch(`/Event/Buy?id=${eventId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('✅ Ticket purchased!');
-                        updateTicketsLeft(eventId);
-                    } else {
-                        alert('❌ ' + data.message);
-                    }
-                });
-        });
-
-        function updateTicketsLeft(eventId) {
-            fetch(`/Event/GetTicketsLeft?id=${eventId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
-                        if (ticketsLeftElement) {
-                            ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
-                        }
-                    }
-                })
-                .catch(error => console.error('Error fetching tickets left:', error));
-        }
 
         $(document).ready(function () {
             loadEvents(1);

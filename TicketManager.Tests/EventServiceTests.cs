@@ -179,7 +179,7 @@ namespace TicketManager.Tests
             await db.SaveChangesAsync();
 
             var service = GetService(db);
-            var result = await service.GetEventForEditingAsync("user1", 1);
+            var result = await service.GetEventForEditingAsync("user1", 1, isAdmin: false);
 
             Assert.NotNull(result);
             Assert.AreEqual("Old Name", result.Name);
@@ -191,7 +191,7 @@ namespace TicketManager.Tests
             var db = GetDbContext(nameof(GetEventForEditingAsync_ReturnsNull_WhenEventNotFound));
             var service = GetService(db);
 
-            var result = await service.GetEventForEditingAsync("user1", 99);
+            var result = await service.GetEventForEditingAsync("user1", 99, isAdmin: false);
 
             Assert.IsNull(result);
         }
@@ -347,7 +347,7 @@ namespace TicketManager.Tests
             };
 
 
-            var result = await service.PersistUpdatedEventAsync("user1", updated);
+            var result = await service.PersistUpdatedEventAsync("user1", updated, isAdmin: false);
 
             Assert.IsTrue(result);
             Assert.AreEqual("New", db.Events.First().Name);

@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Create New Event";
+    Layout = "_Layout";
+
 }
 ="container my-5">
     <div class="row justify-content-center">
@@ -11,7 +13,7 @@
                     <h1 class="section-title mb-4">Create New Event</h1>
 
                     <form asp-action="Create" method="post">
-                    @Html.AntiForgeryToken()
+
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 <label asp-for="Name" class="form-label">Event Name</label>
@@ -59,10 +61,12 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="@Url.Action("Index")" class="btn elegant-btn elegant-btn-secondary">
-                                <i class="fas fa-times me-2"></i>
-                                Cancel
-                            </a>
+
+                        <a asp-controller="MyEvent" asp-action="Index" class="btn elegant-btn elegant-btn-secondary">
+                            <i class="fas fa-times me-2"></i>
+                            Cancel
+                        </a>
+
                             <button type="submit" class="btn elegant-btn elegant-btn-primary">
                                 <i class="fas fa-plus me-2"></i>
                                 Create Event

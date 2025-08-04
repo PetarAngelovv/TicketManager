@@ -12,8 +12,8 @@ namespace TicketManager.Services.Contracts
             Task<EventDeleteInputModel?> GetEventForDeletingAsync(string? userId, int id);
             Task<bool> SoftDeleteEventAsync(string userId, EventDeleteInputModel inputModel);
             Task<bool> HardDeleteEventAsync(string userId, int eventId);
-            Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id);
-            Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel);
+            Task<EventEditInputModel?> GetEventForEditingAsync(string userId, int? id, bool isAdmin);
+            Task<bool> PersistUpdatedEventAsync(string userId, EventEditInputModel inputModel, bool isAdmin);
             Task<IEnumerable<EventFavoriteViewModel>> GetFavoriteEventAsync(string userId);
             Task<bool> AddEventToUserFavoritesListAsync(string userId, int id);
             Task<bool> RemoveEventFromUserFavoritesListAsync(string userId, int id);

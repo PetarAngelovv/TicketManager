@@ -6,7 +6,6 @@
     Layout = "_Layout";
 }
 
-@Html.AntiForgeryToken()
 
 <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 20px;">
     <h2>@ViewData["Title"]</h2>
@@ -68,13 +67,11 @@
     <script>
         $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
-            const token = $('input[name="__RequestVerificationToken"]').val();
 
             $.ajax({
                 url: "/Event/Buy",
                 method: "POST",
                 data: {
-                    __RequestVerificationToken: token,
                     id: eventId
                 }
             })

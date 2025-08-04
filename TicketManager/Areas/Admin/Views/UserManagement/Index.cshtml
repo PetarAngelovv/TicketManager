@@ -2,10 +2,9 @@
 
 @{
     ViewData["Title"] = "User Management";
+    Layout = "_Layout";
 }
-<form id="antiForgeryForm">
-    @Html.AntiForgeryToken()
-</form>
+
 <h2>User Management</h2>
 
 <table class="table">
@@ -25,7 +24,7 @@
                 <td>
                     @if (!user.IsManager)
                     {
-                        <form asp-area="Admin" asp-controller="Admin" asp-action="AddManagerRole" method="post">
+                        <form asp-area="Admin" asp-controller="UserManagement" asp-action="AddManagerRole" method="post">
                             <input type="hidden" name="userId" value="@user.Id" />
                             <button type="submit" class="btn btn-success">Make Manager</button>
                         </form>
@@ -33,7 +32,7 @@
                     }
                     else
                     {
-                        <form asp-area="Admin" asp-controller="Admin" asp-action="RemoveManagerRole" method="post">
+                        <form asp-area="Admin" asp-controller="UserManagement" asp-action="RemoveManagerRole" method="post">
                             <input type="hidden" name="userId" value="@user.Id" />
                             <button type="submit" class="btn btn-danger">Remove Manager</button>
                         </form>

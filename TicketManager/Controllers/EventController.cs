@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketManager.Services.Contracts;
 using TicketManager.Web.ViewModels.Event;
+using TicketManager.Web.Models;
 using static GCommon.GlobalValidation;
 
 
 namespace TicketManager.Web.Controllers
 {
     [Authorize(Roles = RoleConstants.User)]
+
     public class EventController : BaseController
     {
 
@@ -59,8 +61,6 @@ namespace TicketManager.Web.Controllers
                 return this.RedirectToAction(nameof(Index), "Home");
             }
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
@@ -123,7 +123,6 @@ namespace TicketManager.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(int? id)
         {
             try
@@ -152,7 +151,6 @@ namespace TicketManager.Web.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Remove(int? id)
         {
             try
@@ -246,8 +244,6 @@ namespace TicketManager.Web.Controllers
                 return PartialView("EventListPartial", new PaginatedEventsViewModel());
             }
         }
-
-
 
     }
 }

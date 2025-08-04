@@ -47,7 +47,6 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EventCreateInputModel inputModel)
         {
             if (!ModelState.IsValid)
@@ -76,11 +75,11 @@ namespace TicketManager.Web.Areas.Manager.Controllers
 
             return View(model);
         }
-
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var model = await _eventService.GetEventForEditingAsync(GetUserId(), id);
+            bool isAdmin = User.IsInRole("Admin");
+            var model = await _eventService.GetEventForEditingAsync(GetUserId(), id, isAdmin);
             if (model == null)
                 return RedirectToAction(nameof(Index));
 
@@ -89,13 +88,13 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EventEditInputModel inputModel)
         {
             if (!ModelState.IsValid)
                 return View(inputModel);
 
-            bool result = await _eventService.PersistUpdatedEventAsync(GetUserId(), inputModel);
+            bool isAdmin = User.IsInRole("Admin");
+            bool result = await _eventService.PersistUpdatedEventAsync(GetUserId(), inputModel, isAdmin);
             if (!result)
             {
                 ModelState.AddModelError(string.Empty, "Error updating event");
@@ -104,6 +103,7 @@ namespace TicketManager.Web.Areas.Manager.Controllers
 
             return RedirectToAction(nameof(Details), new { id = inputModel.Id });
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
@@ -116,7 +116,6 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDelete(EventDeleteInputModel inputModel)
         {
             if (!ModelState.IsValid)

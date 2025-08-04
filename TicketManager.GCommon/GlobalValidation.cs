@@ -39,10 +39,5 @@
             public const decimal MinPrice = 1.00m;
             public const decimal MaxPrice = 1000.00m;
         }
-
-        public static class General
-        {
-            public const string RequiredErrorMessage = "Полето е задължително.";
-        }
     }
 }

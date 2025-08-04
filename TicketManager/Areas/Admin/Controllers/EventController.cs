@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿sing Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
@@ -73,7 +73,6 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EventCreateInputModel inputModel)
         {
             try
@@ -152,7 +151,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
             }
         }
 
-        [HttpPost]
+       [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ConfirmDelete(EventDeleteInputModel inputModel)
         {
@@ -186,12 +185,18 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         {
             try
             {
-                bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id);
+                if (!User.IsInRole("Admin"))
+                {
+                    TempData["ErrorMessage"] = "Unauthorized: Only Admins can hard delete events.";
+                    return RedirectToAction("Details", new { id });
+                }
+
+                bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id, isAdmin: true);
 
                 if (!result)
                 {
                     TempData["ErrorMessage"] = "Hard deletion failed or event not found.";
-                    return RedirectToAction("Index", new { id });
+                    return RedirectToAction("Details", new { id });
                 }
 
                 TempData["SuccessMessage"] = "Event permanently deleted.";
@@ -212,7 +217,9 @@ namespace TicketManager.Web.Areas.Admin.Controllers
             try
             {
                 string userId = this.GetUserId()!;
-                EventEditInputModel? editEventInputModel = await this._eventService.GetEventForEditingAsync(userId, id);
+                bool isAdmin = User.IsInRole("Admin");
+                EventEditInputModel? editEventInputModel = await this._eventService.GetEventForEditingAsync(userId, id, isAdmin);
+
                 if (editEventInputModel == null)
                 {
                     return this.RedirectToAction(nameof(Index));
@@ -232,7 +239,6 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EventEditInputModel inputModel)
         {
             try
@@ -241,7 +247,9 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                 {
                     return this.View(inputModel);
                 }
-                bool editResult = await this._eventService.PersistUpdatedEventAsync(this.GetUserId()!, inputModel);
+
+                bool isAdmin = User.IsInRole("Admin");
+                bool editResult = await this._eventService.PersistUpdatedEventAsync(this.GetUserId()!, inputModel, isAdmin);
 
                 if (editResult == false)
                 {

@@ -1,0 +1,78 @@
+﻿@model List<string>
+
+@{
+    ViewData["Title"] = "Pending Deletion Requests";
+    Layout = "_Layout";
+}
+
+<h2 class="mb-4">🗑️ Pending Account Deletion Requests</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var username in Model)
+            {
+                <tr data-username="@username" id="row-@username">
+                    <td>@username</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="approveDelete('@username')">Approve & Delete</button>
+                        <button type="button" class="btn btn-secondary ms-2" onclick="cancelDeleteRequest('@username')">Cancel Request</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No pending deletion requests.</p>
+}
+
+@section Scripts {
+    <script>
+        function approveDelete(username) {
+            if (!confirm("Are you sure you want to delete this user?")) return;
+
+            $.ajax({
+                url: '/Admin/UserManagement/DeleteConfirmed',
+                type: 'POST',
+                data: { username: username },  
+                success: function () {
+                    alert('✅ User deleted.');
+                    location.reload();
+                },
+                error: function () {
+                    alert('❌ Error deleting user.');
+                }
+            });
+        }
+
+        function cancelDeleteRequest(username) {
+            if (!confirm("Are you sure you want to cancel this deletion request?")) return;
+
+            $.ajax({
+                url: '/Admin/UserManagement/RejectDeletion',
+                type: 'POST',
+                data: { username: username },
+                success: function () {
+                    alert('✅ Deletion request canceled.');
+                    $('tr[data-username="' + username + '"]').remove();
+
+                    if ($('tbody tr').length === 0) {
+                        $('table').replaceWith('<p>No pending deletion requests.</p>');
+                    }
+                },
+                error: function () {
+                    alert('❌ Error canceling the deletion request.');
+                }
+            });
+        }
+    </script>
+}

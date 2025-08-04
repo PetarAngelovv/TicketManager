@@ -10,6 +10,11 @@
 
 </head>
 <body>
+
+    <form id="antiForgeryForm" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form>
+
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom mb-3">
             <div class="container-fluid">
@@ -30,8 +35,13 @@
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Manage Users</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="DeleteRequests">🗑Deletion Requests </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="Event" asp-action="Create">Add Event</a>
                             </li>
+                         
+
                         }
                         else if (User.IsInRole("Manager"))
                         {
@@ -68,6 +78,13 @@
 </html>
 @section Scripts {
     <script>
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
+            }
+        });
+
+
         $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
             $.post("/Event/Buy", { id: eventId })

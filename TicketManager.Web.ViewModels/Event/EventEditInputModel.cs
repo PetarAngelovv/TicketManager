@@ -21,11 +21,12 @@ namespace TicketManager.Web.ViewModels.Event
         public string? ImageUrl { get; set; }
 
         [Required]
-        [Range(0, 10000)]
+
+        [Range(MinPrice, MaxPrice, ErrorMessage = "The price must be between 0.01 and 1000.")]
         public decimal TicketPrice { get; set; }
 
         [Required]
-        [Range(1, 100000)]
+        [Range(MinTickets, MaxTickets, ErrorMessage = "The number of tickets must be between 1 and 10 000.")]
         public int TotalTickets { get; set; }
 
         [Required]

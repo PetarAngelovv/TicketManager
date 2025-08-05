@@ -25,7 +25,7 @@ namespace TicketManager.Web.Areas.Manager.Controllers
         public async Task<IActionResult> Index()
         {
             string userId = GetUserId();
-            var events = await _eventService.GetAllAsync(userId);
+            var events = await _eventService.GetAllAsync(userId, isAdmin: false);
 
             var myEvents = events
                 .Where(e => e.IsAuthor) 

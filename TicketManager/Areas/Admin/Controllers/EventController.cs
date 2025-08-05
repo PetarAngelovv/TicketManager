@@ -1,4 +1,4 @@
-﻿sing Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
@@ -31,14 +31,15 @@ namespace TicketManager.Web.Areas.Admin.Controllers
         {
             try
             {
-                var allEvents = await _eventService.GetAllEventsForAdminAsync();
+                var allEvents = await _eventService.GetAllAsync(null, isAdmin: true);
 
                 var allEventsViewModels = allEvents
                     .Select(e => new EventIndexViewModel
                     {
                         Id = e.Id,
                         Name = e.Name,
-                        IsDeleted = e.IsDeleted
+                        IsDeleted = e.IsDeleted,
+                        CategoryName = e.CategoryName ?? "Unknown"
                     })
                     .ToList();
 
@@ -50,6 +51,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index), "Home");
             }
         }
+
 
 
         [HttpGet]
@@ -191,7 +193,7 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                     return RedirectToAction("Details", new { id });
                 }
 
-                bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id, isAdmin: true);
+                bool result = await _eventService.HardDeleteEventAsync(GetUserId(), id);
 
                 if (!result)
                 {

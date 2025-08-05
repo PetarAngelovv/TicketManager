@@ -16,29 +16,34 @@ public class EventService : IEventService
         _context = context;
         _userManager = userManager;
     }
-    public async Task<IEnumerable<EventIndexViewModel>> GetAllAsync(string? userId)
+    public async Task<IEnumerable<EventIndexViewModel>> GetAllAsync(string? userId, bool isAdmin = false)
     {
-        var events = await _context.Events
+        var eventsQuery = _context.Events
             .Include(e => e.Category)
             .Include(e => e.UsersEvents)
             .Include(e => e.Tickets)
-            .AsNoTracking()
-            .ToListAsync();
+            .AsNoTracking();
 
-        var eventViewModels = events.Select(e => new EventIndexViewModel()
+        if (isAdmin)
+            eventsQuery = eventsQuery.IgnoreQueryFilters();
+
+        var events = await eventsQuery.ToListAsync();
+
+        var eventViewModels = events.Select(e => new EventIndexViewModel
         {
             Id = e.Id,
             Name = e.Name,
             ImageUrl = e.ImageUrl,
-            CategoryName = e.Category.Name,
+            CategoryName = e.Category?.Name ?? "Unknown", // still safe for nulls
             SavedCount = e.UsersEvents.Count(),
-            IsAuthor = userId != null && e.AuthorId.ToLower() == userId.ToLower(),
-            IsSaved = userId != null && e.UsersEvents.Any(ur => ur.UserId.ToLower() == userId.ToLower()),
+            IsAuthor = userId != null && e.AuthorId.Equals(userId, StringComparison.OrdinalIgnoreCase),
+            IsSaved = userId != null && e.UsersEvents.Any(ur => ur.UserId.Equals(userId, StringComparison.OrdinalIgnoreCase)),
             TicketsLeft = e.Tickets.Count(t => !t.IsSold)
         });
 
         return eventViewModels;
     }
+
     public async Task<bool> CreateEventAsync(string? userId, EventCreateInputModel inputModel)
     {
         bool opResult = false;
@@ -445,9 +450,5 @@ public class EventService : IEventService
         availableTicket.IsSold = true;
 
         await _context.SaveChangesAsync();
-    }
-    public async Task<List<Event>> GetAllEventsForAdminAsync()
-    {
-        return await _context.Events.IgnoreQueryFilters().ToListAsync();
     }
 }

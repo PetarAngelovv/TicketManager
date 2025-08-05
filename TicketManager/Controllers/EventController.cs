@@ -31,7 +31,7 @@ namespace TicketManager.Web.Controllers
             try
             {
                 string? userId = this.User.Identity?.IsAuthenticated == true ? this.GetUserId() : null;
-                IEnumerable<EventIndexViewModel> allEvents = await this._eventService.GetAllAsync(userId);
+                IEnumerable<EventIndexViewModel> allEvents = await this._eventService.GetAllAsync(userId, isAdmin: false);
 
                 // Paging
                 int totalItems = allEvents.Count();

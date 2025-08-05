@@ -6,7 +6,7 @@ namespace TicketManager.Services.Contracts
 {
     public interface IEventService
     {
-            Task<IEnumerable<EventIndexViewModel>> GetAllAsync(string? userId);
+            Task<IEnumerable<EventIndexViewModel>> GetAllAsync(string? userId, bool isAdmin);
             Task<bool> CreateEventAsync(string? userId, EventCreateInputModel inputModel);
             Task<EventDetailsViewModel?> GetEventDetailsAsync(string userId, int? id);
             Task<EventDeleteInputModel?> GetEventForDeletingAsync(string? userId, int id);
@@ -21,7 +21,6 @@ namespace TicketManager.Services.Contracts
             Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, int? categoryId, string? userId);
             Task BuyTicketAsync(int eventId, string userId);
             Task<int> GetTicketsLeftAsync(int eventId);
-            Task<List<Event>> GetAllEventsForAdminAsync();
 
     }
 }

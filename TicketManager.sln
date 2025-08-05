@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketManager.GCommon", "Ti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketManager.Web.ViewModels", "TicketManager.Web.ViewModels\TicketManager.Web.ViewModels.csproj", "{32E76139-AFAB-4896-AD1B-3281673745BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketManager.Tests", "TicketManager.Tests\TicketManager.Tests.csproj", "{F1703150-0E88-EB69-9BAC-29D413F7435A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{32E76139-AFAB-4896-AD1B-3281673745BB}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{32E76139-AFAB-4896-AD1B-3281673745BB}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{32E76139-AFAB-4896-AD1B-3281673745BB}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{F1703150-0E88-EB69-9BAC-29D413F7435A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1703150-0E88-EB69-9BAC-29D413F7435A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1703150-0E88-EB69-9BAC-29D413F7435A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1703150-0E88-EB69-9BAC-29D413F7435A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -41,7 +41,9 @@
             <p class="card-text"><strong>Category:</strong> @Model.CategoryName</p>
             <p class="card-text"><strong>Created On:</strong> @Model.CreatedOn</p>
             <p class="card-text"><strong>Author:</strong> @Model.Author</p>
-            <p class="card-text"><strong>Available Tickets:</strong> @Model.TicketsLeft</p>
+            <p class="card-text"><strong>Available Tickets:</strong>
+                <span id="tickets-left">@Model.TicketsLeft</span>
+            </p>
 
             <hr />
         </div>
@@ -68,24 +70,29 @@
         $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
 
-            $.ajax({
-                url: "/Event/Buy",
-                method: "POST",
-                data: {
-                    id: eventId
-                }
-            })
-            .done(function (res) {
-                if (res.success) {
-                    alert("Ticket bought successfully!");
-                    location.reload();
-                } else {
-                    alert(res.message);
-                }
-            })
-            .fail(function () {
-                alert("Something went wrong. Please try again.");
-            });
+            fetch(`/Event/Buy?id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('✅ Ticket purchased!');
+
+                        const ticketsLeftElement = document.getElementById('tickets-left');
+                        let currentCount = parseInt(ticketsLeftElement.textContent);
+                        if (!isNaN(currentCount) && currentCount > 0) {
+                            ticketsLeftElement.textContent = currentCount - 1;
+                        }
+
+                        if (currentCount - 1 <= 0) {
+                            $('.buy-ticket-btn').prop('disabled', true).text('Sold Out');
+                        }
+
+                    } else {
+                        alert('❌ ' + data.message);
+                    }
+                })
+                .catch(() => {
+                    alert("Something went wrong. Please try again.");
+                });
         });
     </script>
 }

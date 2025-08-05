@@ -69,8 +69,20 @@
                             <p>
                                 @foreach (var provider in Model.ExternalLogins!)
                                 {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                    var label = provider.Name switch
+                                    {
+                                        "Discord" => "Discord",
+                                        "Google" => "Google",
+                                        "GitHub" => "GitHub",
+                                        _ => provider.DisplayName ?? provider.Name
+                                    };
+
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name"
+                                            title="Log in using your @label account">
+                                        @label
+                                    </button>
                                 }
+
                             </p>
                         </div>
                     </form>

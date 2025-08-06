@@ -1,22 +1,21 @@
-﻿// EventHub JavaScript functionality
+﻿
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize favorites from localStorage
+
     let favorites = JSON.parse(localStorage.getItem('eventFavorites')) || [];
 
-    // Initialize UI
+
     initializeFavorites();
     updateFavoritesDisplay();
 
-    // Event listeners
+ 
     setupEventListeners();
 
     function setupEventListeners() {
-        // Favorite buttons
         document.querySelectorAll('.favorite-btn').forEach(btn => {
             btn.addEventListener('click', handleFavoriteToggle);
         });
 
-        // Show more/less buttons
+
         const showMoreBtn = document.getElementById('showMoreBtn');
         const showLessBtn = document.getElementById('showLessBtn');
 
@@ -28,17 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
             showLessBtn.addEventListener('click', showLessEvents);
         }
 
-        // Purchase buttons
+
         document.querySelectorAll('.purchase-btn').forEach(btn => {
             btn.addEventListener('click', handlePurchase);
         });
 
-        // Details buttons
+   
         document.querySelectorAll('.elegant-btn-secondary').forEach(btn => {
             btn.addEventListener('click', handleDetails);
         });
 
-        // Favorites button in footer
+       
         const favoritesBtn = document.getElementById('favoritesBtn');
         if (favoritesBtn) {
             favoritesBtn.addEventListener('click', handleViewFavorites);
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const savedCountElement = btn.closest('.elegant-card').querySelector('.saved-count');
 
         if (isFavorited) {
-            // Remove from favorites
+         
             favorites = favorites.filter(id => id !== eventId);
             btn.classList.remove('favorited');
             const icon = btn.querySelector('.btn-icon');
@@ -76,34 +75,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 icon.classList.remove('filled');
             }
 
-            // Decrease count
+           
             if (savedCountElement) {
                 const currentCount = parseInt(savedCountElement.textContent);
                 savedCountElement.textContent = currentCount - 1;
             }
         } else {
-            // Add to favorites
+          
             favorites.push(eventId);
             btn.classList.add('favorited');
             const icon = btn.querySelector('.btn-icon');
             if (icon) {
                 icon.classList.add('filled');
             }
-
-            // Increase count
             if (savedCountElement) {
                 const currentCount = parseInt(savedCountElement.textContent);
                 savedCountElement.textContent = currentCount + 1;
             }
         }
 
-        // Save to localStorage
+   
         localStorage.setItem('eventFavorites', JSON.stringify(favorites));
 
-        // Update favorites display
+     
         updateFavoritesDisplay();
 
-        // Add animation effect
+      
         btn.style.transform = 'scale(1.2)';
         setTimeout(() => {
             btn.style.transform = '';
@@ -140,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         hiddenCards.forEach(card => {
             card.classList.remove('d-none');
-            // Add entrance animation
+         
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
             setTimeout(() => {
@@ -153,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (showMoreBtn) showMoreBtn.classList.add('d-none');
         if (showLessBtn) showLessBtn.classList.remove('d-none');
 
-        // Re-attach event listeners to newly shown cards
         hiddenCards.forEach(card => {
             const favoriteBtn = card.querySelector('.favorite-btn');
             const purchaseBtn = card.querySelector('.purchase-btn');
@@ -214,12 +210,8 @@ document.addEventListener('DOMContentLoaded', function () {
             btn.style.transform = '';
         }, 150);
 
-        // Show purchase confirmation (you can replace this with actual purchase logic)
         alert(`Purchase initiated for: ${eventTitle}\nPrice: $${price}\n\nThis would redirect to payment processing...`);
 
-        // In a real application, you would:
-        // window.location.href = `/purchase/${eventId}`;
-        // or make an AJAX call to your purchase endpoint
     }
 
     function handleDetails(e) {
@@ -227,12 +219,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const card = e.currentTarget.closest('.elegant-card');
         const eventTitle = card.querySelector('.card-title').textContent;
 
-        // Show details modal or redirect (you can replace this with actual details logic)
         alert(`Showing details for: ${eventTitle}\n\nThis would show a detailed view or modal...`);
 
-        // In a real application, you would:
-        // window.location.href = `/events/details/${eventId}`;
-        // or show a modal with event details
     }
 
     function handleViewFavorites(e) {
@@ -242,8 +230,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('You haven\'t saved any favorite events yet!\n\nClick the heart icon on any event to add it to your favorites.');
             return;
         }
-
-        // Show favorites view (you can replace this with actual favorites page logic)
         const favoriteEvents = favorites.map(id => {
             const card = document.querySelector(`[data-event-id="${id}"]`).closest('.elegant-card');
             return card.querySelector('.card-title').textContent;
@@ -251,11 +237,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         alert(`Your Favorite Events:\n\n• ${favoriteEvents}\n\nThis would redirect to your favorites page...`);
 
-        // In a real application, you would:
-        // window.location.href = '/favorites';
     }
     $(function () {
-        // 🌟 Anti-forgery setup
         const token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
 
         $.ajaxSetup({
@@ -272,30 +255,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // ✨ Sparkle effects on card hover
-        document.querySelectorAll('.elegant-card').forEach(card => {
-            card.addEventListener('mouseenter', function () {
-                if (!this.querySelector('.card-sparkles')) {
-                    const sparkles = document.createElement('div');
-                    sparkles.className = 'card-sparkles';
-                    sparkles.innerHTML = `
-                    <div class="sparkle sparkle-1">✨</div>
-                    <div class="sparkle sparkle-2">🌟</div>
-                    <div class="sparkle sparkle-3">⭐</div>
-                `;
-                    this.appendChild(sparkles);
-                }
-            });
-
-            card.addEventListener('mouseleave', function () {
-                const sparkles = this.querySelector('.card-sparkles');
-                if (sparkles) {
-                    sparkles.remove();
-                }
-            });
-        });
-
-        // 🧭 Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -309,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
 
-        // 🖼️ Loading animation for images
         document.querySelectorAll('.card-image').forEach(img => {
             img.addEventListener('load', function () {
                 this.style.opacity = '0';

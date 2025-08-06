@@ -1,23 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
-/* ============================================
-   TICKET MANAGER - VIBRANT CSS VARIABLES
-   ============================================ */
+/* TICKET MANAGER - VIBRANT CSS VARIABLES */
 :root {
-    /* Primary Colors - More Vibrant */
+
     --primary-purple: #7C3AED;
     --primary-blue: #2563EB;
     --primary-pink: #EC4899;
     --primary-orange: #F97316;
     --primary-teal: #0EA5E9;
     --primary-lime: #84CC16;
-    /* Accent Colors */
+
     --accent-red: #EF4444;
     --accent-yellow: #FBBF24;
     --accent-green: #10B981;
     --accent-indigo: #6366F1;
     --accent-fuchsia: #E879F9;
-    /* Neutral Colors */
+
     --dark-navy: #0F172A;
     --light-slate: #F8FAFC;
     --white: #FFFFFF;
@@ -31,14 +29,14 @@
     --gray-700: #374151;
     --gray-800: #1F2937;
     --gray-900: #111827;
-    /* Vibrant Gradients */
+  
     --gradient-sunset: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-pink) 100%);
     --gradient-ocean: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
     --gradient-cosmic: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-pink) 100%);
     --gradient-spring: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-lime) 100%);
     --gradient-fire: linear-gradient(135deg, var(--primary-orange) 0%, var(--accent-red) 100%);
     --gradient-neon: linear-gradient(135deg, var(--accent-yellow) 0%, var(--primary-lime) 100%);
-    /* Shadows with colored tints */
+
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -49,9 +47,7 @@
     --shadow-orange: 0 10px 25px rgba(249, 115, 22, 0.3);
 }
 
-/* ============================================
-   GLOBAL STYLES
-   ============================================ */
+/* GLOBAL STYLES */
 * {
     margin: 0;
     padding: 0;
@@ -68,9 +64,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ============================================
-   ANIMATED BACKGROUND
-   ============================================ */
+/* ANIMATED BACKGROUND */
 .bg-animation {
     position: fixed;
     top: 0;
@@ -102,9 +96,7 @@ body {
     }
 }
 
-/* ============================================
-   NAVIGATION & HEADER
-   ============================================ */
+/* NAVIGATION & HEADER */
 .header {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
@@ -198,9 +190,7 @@ body {
         font-weight: 700;
     }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
+/* HERO SECTION */
 .hero-section {
     background: var(--gradient-cosmic);
     padding: 5rem 2rem;
@@ -279,9 +269,7 @@ body {
     letter-spacing: 1px;
 }
 
-/* ============================================
-   BUTTONS
-   ============================================ */
+/* BUTTONS */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -362,7 +350,6 @@ body {
     border-radius: 14px;
 }
 
-/* Add pulsing effect for CTA buttons */
 .btn-cta {
     position: relative;
     animation: pulse 2s infinite;
@@ -382,9 +369,7 @@ body {
     }
 }
 
-/* ============================================
-   CARDS & EVENTS
-   ============================================ */
+/* CARDS & EVENTS */
 .content-section {
     max-width: 1400px;
     margin: 2rem auto;
@@ -567,9 +552,7 @@ body {
             filter: brightness(110%);
         }
 
-/* ============================================
-   FORMS
-   ============================================ */
+/* FORMS */
 .form-group {
     margin-bottom: 1.75rem;
 }
@@ -603,9 +586,7 @@ body {
     resize: vertical;
 }
 
-/* ============================================
-   TABLES
-   ============================================ */
+/* TABLES */
 .table-container {
     border-radius: 16px;
     overflow: hidden;
@@ -656,9 +637,7 @@ body {
     color: var(--accent-red);
 }
 
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
+/* RESPONSIVE DESIGN */
 @media (max-width: 1024px) {
     .events-grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -725,9 +704,7 @@ body {
     }
 }
 
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
+/* UTILITY CLASSES*/
 .text-center {
     text-align: center;
 }
@@ -891,7 +868,6 @@ body {
 .bg-gradient-spring {
     background: var(--gradient-spring);
 }
-/* Fix the vertical alignment of user greeting with other nav elements */
 .user-welcome, .navbar-text, .navbar-right {
     display: flex;
     align-items: center;
@@ -905,7 +881,6 @@ body {
     align-items: center;
 }
 
-/* Ensure all navbar items are vertically aligned */
 .navbar-nav {
     display: flex;
     align-items: center;
@@ -918,13 +893,11 @@ body {
         height: 100%;
     }
 
-/* For ASP.NET MVC specific elements */
 .navbar-collapse {
     display: flex;
     align-items: center;
 }
 
-/* Fix specifically for Hello name@TManager.com text */
 .navbar-text a, .navbar-text span {
     display: inline-flex;
     align-items: center;

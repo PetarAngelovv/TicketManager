@@ -1,21 +1,22 @@
-﻿
+﻿// EventHub JavaScript functionality
 document.addEventListener('DOMContentLoaded', function () {
-
+    // Initialize favorites from localStorage
     let favorites = JSON.parse(localStorage.getItem('eventFavorites')) || [];
 
-
+    // Initialize UI
     initializeFavorites();
     updateFavoritesDisplay();
 
- 
+    // Event listeners
     setupEventListeners();
 
     function setupEventListeners() {
+        // Favorite buttons
         document.querySelectorAll('.favorite-btn').forEach(btn => {
             btn.addEventListener('click', handleFavoriteToggle);
         });
 
-
+        // Show more/less buttons
         const showMoreBtn = document.getElementById('showMoreBtn');
         const showLessBtn = document.getElementById('showLessBtn');
 
@@ -27,17 +28,17 @@ document.addEventListener('DOMContentLoaded', function () {
             showLessBtn.addEventListener('click', showLessEvents);
         }
 
-
+        // Purchase buttons
         document.querySelectorAll('.purchase-btn').forEach(btn => {
             btn.addEventListener('click', handlePurchase);
         });
 
-   
+        // Details buttons
         document.querySelectorAll('.elegant-btn-secondary').forEach(btn => {
             btn.addEventListener('click', handleDetails);
         });
 
-       
+        // Favorites button in footer
         const favoritesBtn = document.getElementById('favoritesBtn');
         if (favoritesBtn) {
             favoritesBtn.addEventListener('click', handleViewFavorites);
@@ -67,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const savedCountElement = btn.closest('.elegant-card').querySelector('.saved-count');
 
         if (isFavorited) {
-         
+            // Remove from favorites
             favorites = favorites.filter(id => id !== eventId);
             btn.classList.remove('favorited');
             const icon = btn.querySelector('.btn-icon');
@@ -75,32 +76,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 icon.classList.remove('filled');
             }
 
-           
+            // Decrease count
             if (savedCountElement) {
                 const currentCount = parseInt(savedCountElement.textContent);
                 savedCountElement.textContent = currentCount - 1;
             }
         } else {
-          
+            // Add to favorites
             favorites.push(eventId);
             btn.classList.add('favorited');
             const icon = btn.querySelector('.btn-icon');
             if (icon) {
                 icon.classList.add('filled');
             }
+
+            // Increase count
             if (savedCountElement) {
                 const currentCount = parseInt(savedCountElement.textContent);
                 savedCountElement.textContent = currentCount + 1;
             }
         }
 
-   
+        // Save to localStorage
         localStorage.setItem('eventFavorites', JSON.stringify(favorites));
 
-     
+        // Update favorites display
         updateFavoritesDisplay();
 
-      
+        // Add animation effect
         btn.style.transform = 'scale(1.2)';
         setTimeout(() => {
             btn.style.transform = '';
@@ -137,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         hiddenCards.forEach(card => {
             card.classList.remove('d-none');
-         
+            // Add entrance animation
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
             setTimeout(() => {
@@ -150,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (showMoreBtn) showMoreBtn.classList.add('d-none');
         if (showLessBtn) showLessBtn.classList.remove('d-none');
 
+        // Re-attach event listeners to newly shown cards
         hiddenCards.forEach(card => {
             const favoriteBtn = card.querySelector('.favorite-btn');
             const purchaseBtn = card.querySelector('.purchase-btn');

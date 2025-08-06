@@ -43,13 +43,30 @@ else
                             </a>
                         }
 
-                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor)
+                        @if (User?.Identity?.IsAuthenticated == true && !_event.IsAuthor && _event.TicketsLeft > 0)
                         {
-                            <button class="btn btn-primary buy-ticket-btn"
+                            <label for="ticketQuantity-@_event.Id">Number of tickets:</label>
+                            <input type="number"
+                                   id="ticketQuantity-@_event.Id"
+                                   name="ticketQuantity"
+                                   min="1"
+                                   max="@_event.TicketsLeft"
+                                   value="1"
+                                   required
+                                   class="form-control mb-2"> 
+
+                            <button class="btn btn-primary w-100 buy-ticket-btn"
                                     data-event-id="@_event.Id">
-                                🎫 Buy Ticket
+                                <i class="fas fa-ticket-alt"></i> 🎫 Buy Ticket
                             </button>
                         }
+                        else if (_event.TicketsLeft == 0)
+                        {
+                            <button class="btn btn-secondary w-100" disabled>
+                                🚫 Sold Out
+                            </button>
+                        }
+
                     </div>
                 </div>
             </div>

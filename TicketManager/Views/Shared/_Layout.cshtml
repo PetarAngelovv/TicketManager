@@ -76,29 +76,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-@section Scripts {
-    <script>
-        $.ajaxSetup({
-            headers: {
-                'RequestVerificationToken': $('#antiForgeryForm input[name="__RequestVerificationToken"]').val()
-            }
-        });
-
-
-        $(document).on('click', '.buy-ticket-btn', function () {
-            const eventId = $(this).data('event-id');
-            $.post("/Event/Buy", { id: eventId })
-                .done(function (res) {
-                    if (res.success) {
-                        alert("Ticket bought successfully!");
-                        location.reload();
-                    } else {
-                        alert(res.message);
-                    }
-                })
-                .fail(function () {
-                    alert("Something went wrong. Please try again.");
-                });
-        });
-    </script>
-}

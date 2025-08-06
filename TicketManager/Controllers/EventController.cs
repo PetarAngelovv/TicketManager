@@ -179,13 +179,13 @@ namespace TicketManager.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Buy(int id)
+        public async Task<IActionResult> Buy(int id, int quantity = 1)
         {
             try
             {
                 string userId = this.GetUserId()!;
 
-                await this._eventService.BuyTicketAsync(id, userId);
+                await this._eventService.BuyTicketAsync(id, userId, quantity);
 
                 return Json(new { success = true });
             }
@@ -198,6 +198,7 @@ namespace TicketManager.Web.Controllers
                 return Json(new { success = false, message = "Something went wrong." });
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetTicketsLeft(int id)
         {

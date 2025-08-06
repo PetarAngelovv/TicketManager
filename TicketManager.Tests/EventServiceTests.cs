@@ -528,7 +528,7 @@ namespace TicketManager.Tests
             await db.SaveChangesAsync();
 
             var service = GetService(db);
-            await service.BuyTicketAsync(1, "user1");
+            await service.BuyTicketAsync(1, "user1", 1);
 
             Assert.AreEqual(1, db.Tickets.Count(t => t.IsSold));
             Assert.AreEqual(4, db.Tickets.Count(t => !t.IsSold));

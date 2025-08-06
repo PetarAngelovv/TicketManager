@@ -416,18 +416,23 @@ public class EventService : IEventService
 
         return results;
     }
-    public async Task BuyTicketAsync(int eventId, string userId)
+    public async Task BuyTicketAsync(int eventId, string userId, int quantity)
     {
-        var availableTicket = await _context.Tickets
-            .Where(t => t.EventId == eventId && !t.IsSold)
-            .FirstOrDefaultAsync();
-
-        if (availableTicket == null)
+        if (quantity < 1)
         {
-            throw new InvalidOperationException("No available tickets for this event.");
+            throw new InvalidOperationException("Invalid ticket quantity.");
         }
 
-    
+        var availableTickets = await _context.Tickets
+            .Where(t => t.EventId == eventId && !t.IsSold)
+            .Take(quantity)
+            .ToListAsync();
+
+        if (availableTickets.Count < quantity)
+        {
+            throw new InvalidOperationException("Not enough tickets available.");
+        }
+
         var order = new Order
         {
             UserId = userId,
@@ -437,18 +442,20 @@ public class EventService : IEventService
         await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
 
-       
-        var orderTicket = new OrderTicket
+        var orderTickets = availableTickets.Select(ticket => new OrderTicket
         {
             OrderId = order.Id,
-            TicketId = availableTicket.Id
-        };
+            TicketId = ticket.Id
+        });
 
-        await _context.OrderTickets.AddAsync(orderTicket);
+        await _context.OrderTickets.AddRangeAsync(orderTickets);
 
-        
-        availableTicket.IsSold = true;
+        foreach (var ticket in availableTickets)
+        {
+            ticket.IsSold = true;
+        }
 
         await _context.SaveChangesAsync();
     }
+
 }

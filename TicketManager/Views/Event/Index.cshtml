@@ -121,20 +121,26 @@
         });
 
         // Buy Ticket
-        $(document).on('click', '.buy-ticket-btn', function () {
+              $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
+            const quantityInput = $(`#ticketQuantity-${eventId}`);
+            const quantity = parseInt(quantityInput.val()) || 1;
 
-            fetch(`/Event/Buy?id=${eventId}`)
+            fetch(`/Event/Buy?id=${eventId}&quantity=${quantity}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('✅ Ticket purchased!');
+                        alert(`✅ Purchased ${quantity} ticket(s)!`);
                         updateTicketsLeft(eventId);
                     } else {
                         alert('❌ ' + data.message);
                     }
+                })
+                .catch(() => {
+                    alert("🚨 Something went wrong. Please try again.");
                 });
         });
+
 
         function updateTicketsLeft(eventId) {
             fetch(`/Event/GetTicketsLeft?id=${eventId}`)

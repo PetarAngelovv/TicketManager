@@ -54,12 +54,22 @@
                     <i class="fas fa-arrow-left"></i> Back
                 </button>
 
-                @if (User?.Identity?.IsAuthenticated == true && !Model.IsAuthor && Model.TotalTickets > 0)
+                @if (User?.Identity?.IsAuthenticated == true && !Model.IsAuthor && Model.TicketsLeft > 0)
                 {
-                    <button class="btn btn-primary w-100 mt-3 buy-ticket-btn" data-event-id="@Model.Id">
+                    <label for="ticketQuantity">Number of tickets:</label>
+                    <input type="number" id="ticketQuantity" name="ticketQuantity" min="1" max="@Model.TotalTickets" value="1" required class="form-control mb-2">
+
+                    <button class="btn btn-primary w-100 buy-ticket-btn" data-event-id="@Model.Id">
                         <i class="fas fa-ticket-alt"></i> Buy Ticket
                     </button>
                 }
+                else if (Model.TicketsLeft == 0)
+                {
+                    <button class="btn btn-secondary w-100" disabled>
+                        🚫 Sold Out
+                    </button>
+                }
+
             </div>
         </div>
     </div>
@@ -67,25 +77,21 @@
 
 @section Scripts {
     <script>
-        $(document).on('click', '.buy-ticket-btn', function () {
+                $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
+            const quantity = parseInt($('#ticketQuantity').val()) || 1;
 
-            fetch(`/Event/Buy?id=${eventId}`)
+            fetch(`/Event/Buy?id=${eventId}&quantity=${quantity}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('✅ Ticket purchased!');
+                        alert(`✅ Purchased ${quantity} ticket(s)!`);
 
                         const ticketsLeftElement = document.getElementById('tickets-left');
                         let currentCount = parseInt(ticketsLeftElement.textContent);
-                        if (!isNaN(currentCount) && currentCount > 0) {
-                            ticketsLeftElement.textContent = currentCount - 1;
+                        if (!isNaN(currentCount) && currentCount >= quantity) {
+                            ticketsLeftElement.textContent = currentCount - quantity;
                         }
-
-                        if (currentCount - 1 <= 0) {
-                            $('.buy-ticket-btn').prop('disabled', true).text('Sold Out');
-                        }
-
                     } else {
                         alert('❌ ' + data.message);
                     }
@@ -94,5 +100,6 @@
                     alert("Something went wrong. Please try again.");
                 });
         });
+
     </script>
 }

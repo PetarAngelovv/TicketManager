@@ -19,7 +19,7 @@ namespace TicketManager.Services.Contracts
             Task<bool> RemoveEventFromUserFavoritesListAsync(string userId, int id);
             Task<IEnumerable<EventIndexViewModel>> GetAllByCreatorAsync(string? userId);
             Task<IEnumerable<EventIndexViewModel>> SearchEventsAsync(string term, int? categoryId, string? userId);
-            Task BuyTicketAsync(int eventId, string userId);
+            Task BuyTicketAsync(int eventId, string userId, int quantity);
             Task<int> GetTicketsLeftAsync(int eventId);
 
     }

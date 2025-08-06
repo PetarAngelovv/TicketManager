@@ -1,21 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
-/* TICKET MANAGER - VIBRANT CSS VARIABLES */
+/* ============================================
+   TICKET MANAGER - VIBRANT CSS VARIABLES
+   ============================================ */
 :root {
-
+    /* Primary Colors - More Vibrant */
     --primary-purple: #7C3AED;
     --primary-blue: #2563EB;
     --primary-pink: #EC4899;
     --primary-orange: #F97316;
     --primary-teal: #0EA5E9;
     --primary-lime: #84CC16;
-
+    /* Accent Colors */
     --accent-red: #EF4444;
     --accent-yellow: #FBBF24;
     --accent-green: #10B981;
     --accent-indigo: #6366F1;
     --accent-fuchsia: #E879F9;
-
+    /* Neutral Colors */
     --dark-navy: #0F172A;
     --light-slate: #F8FAFC;
     --white: #FFFFFF;
@@ -29,14 +31,14 @@
     --gray-700: #374151;
     --gray-800: #1F2937;
     --gray-900: #111827;
-  
+    /* Vibrant Gradients */
     --gradient-sunset: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-pink) 100%);
     --gradient-ocean: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-teal) 100%);
     --gradient-cosmic: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-pink) 100%);
     --gradient-spring: linear-gradient(135deg, var(--accent-green) 0%, var(--primary-lime) 100%);
     --gradient-fire: linear-gradient(135deg, var(--primary-orange) 0%, var(--accent-red) 100%);
     --gradient-neon: linear-gradient(135deg, var(--accent-yellow) 0%, var(--primary-lime) 100%);
-
+    /* Shadows with colored tints */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -47,7 +49,9 @@
     --shadow-orange: 0 10px 25px rgba(249, 115, 22, 0.3);
 }
 
-/* GLOBAL STYLES */
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
 * {
     margin: 0;
     padding: 0;
@@ -64,7 +68,9 @@ body {
     overflow-x: hidden;
 }
 
-/* ANIMATED BACKGROUND */
+/* ============================================
+   ANIMATED BACKGROUND
+   ============================================ */
 .bg-animation {
     position: fixed;
     top: 0;
@@ -96,7 +102,9 @@ body {
     }
 }
 
-/* NAVIGATION & HEADER */
+/* ============================================
+   NAVIGATION & HEADER
+   ============================================ */
 .header {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(12px);
@@ -190,7 +198,9 @@ body {
         font-weight: 700;
     }
 
-/* HERO SECTION */
+/* ============================================
+   HERO SECTION
+   ============================================ */
 .hero-section {
     background: var(--gradient-cosmic);
     padding: 5rem 2rem;
@@ -269,7 +279,10 @@ body {
     letter-spacing: 1px;
 }
 
-/* BUTTONS */
+/* ============================================
+   BUTTONS
+   ============================================ */
+/* Base button styles */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -294,6 +307,7 @@ body {
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
+/* Primary, secondary, outline, success, danger variants */
 .btn-primary {
     background: var(--gradient-cosmic);
     color: white;
@@ -339,6 +353,7 @@ body {
     box-shadow: 0 10px 20px rgba(239, 68, 68, 0.25);
 }
 
+/* Size variants */
 .btn-sm {
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
@@ -350,8 +365,160 @@ body {
     border-radius: 14px;
 }
 
-.btn-cta {
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+/* Primary, secondary, outline, success, danger variants */
+.btn-primary {
+    background: var(--gradient-cosmic);
+    color: white;
+    box-shadow: var(--shadow-purple);
+}
+
+    .btn-primary:hover {
+        box-shadow: 0 15px 30px rgba(124, 58, 237, 0.4);
+    }
+
+.btn-secondary {
+    background: var(--gradient-ocean);
+    color: white;
+    box-shadow: var(--shadow-blue);
+}
+
+    .btn-secondary:hover {
+        box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4);
+    }
+
+.btn-outline {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary-purple);
+    border: 2px solid var(--primary-purple);
+    box-shadow: var(--shadow-sm);
+}
+
+    .btn-outline:hover {
+        background: var(--primary-purple);
+        color: white;
+        box-shadow: var(--shadow-purple);
+    }
+
+.btn-success {
+    background: var(--gradient-spring);
+    color: white;
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #F87171 0%, #DC2626 100%);
+    color: white;
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.25);
+}
+
+/* Size variants */
+.btn-sm {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 1.25rem 3rem;
+    font-size: 1.125rem;
+    border-radius: 14px;
+}
+
+/* Buy Ticket button — override Bootstrap safely */
+.btn-buy-ticket {
+    background-color: #38b000;
+    color: white;
+    border: none;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(56, 176, 0, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .btn-buy-ticket:hover {
+        background-color: #2d9100;
+        box-shadow: 0 12px 25px rgba(45, 145, 0, 0.4);
+    }
+/* DETAILS BUTTON — neutral, informative */
+.btn-details {
+    background-color: #f4f4f4;
+    color: #333;
+    border: 2px solid #ccc;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+    .btn-details:hover {
+        background-color: #e0e0e0;
+        border-color: #bbb;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* SAVE BUTTON — action-oriented, vibrant */
+.btn-save {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+    .btn-save:hover {
+        background-color: #357ab8;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(74, 144, 226, 0.3);
+    }
+
+/* FAVORITES LINK BUTTON — warm and inviting */
+.btn-favorites {
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
+    display: inline-block;
+}
+
+    .btn-favorites:hover {
+        background-color: #e85c50;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(232, 92, 80, 0.3);
+    }
+
+/* CTA animation */
+.btn-cta {
     animation: pulse 2s infinite;
 }
 
@@ -369,7 +536,9 @@ body {
     }
 }
 
-/* CARDS & EVENTS */
+/* ============================================
+   CARDS & EVENTS
+   ============================================ */
 .content-section {
     max-width: 1400px;
     margin: 2rem auto;
@@ -552,7 +721,9 @@ body {
             filter: brightness(110%);
         }
 
-/* FORMS */
+/* ============================================
+   FORMS
+   ============================================ */
 .form-group {
     margin-bottom: 1.75rem;
 }
@@ -586,7 +757,9 @@ body {
     resize: vertical;
 }
 
-/* TABLES */
+/* ============================================
+   TABLES
+   ============================================ */
 .table-container {
     border-radius: 16px;
     overflow: hidden;
@@ -637,7 +810,9 @@ body {
     color: var(--accent-red);
 }
 
-/* RESPONSIVE DESIGN */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 1024px) {
     .events-grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -704,7 +879,9 @@ body {
     }
 }
 
-/* UTILITY CLASSES*/
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
 .text-center {
     text-align: center;
 }
@@ -868,6 +1045,7 @@ body {
 .bg-gradient-spring {
     background: var(--gradient-spring);
 }
+/* Fix the vertical alignment of user greeting with other nav elements */
 .user-welcome, .navbar-text, .navbar-right {
     display: flex;
     align-items: center;
@@ -881,6 +1059,7 @@ body {
     align-items: center;
 }
 
+/* Ensure all navbar items are vertically aligned */
 .navbar-nav {
     display: flex;
     align-items: center;
@@ -893,11 +1072,13 @@ body {
         height: 100%;
     }
 
+/* For ASP.NET MVC specific elements */
 .navbar-collapse {
     display: flex;
     align-items: center;
 }
 
+/* Fix specifically for Hello name@TManager.com text */
 .navbar-text a, .navbar-text span {
     display: inline-flex;
     align-items: center;

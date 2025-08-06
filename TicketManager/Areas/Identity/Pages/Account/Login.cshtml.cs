@@ -92,7 +92,6 @@ namespace TicketManager.Web.Areas.Identity.Pages.Account
                         }
                     }
 
-                    // За други роли
                     return LocalRedirect(Url.Content("~/"));
                 }
 

@@ -24,64 +24,55 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<TicketManagerDbContext>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = "Discord"; // Make Discord default if needed
-})
-.AddCookie()
-.AddGoogle(options =>
-{
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-})
-.AddGitHub(options =>
-{
-    options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
-    options.Scope.Add("user:email");
-})
-.AddOAuth("Discord", options =>
-{
-    options.ClientId = builder.Configuration["Authentication:Discord:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Discord:ClientSecret"];
-    options.CallbackPath = new PathString("/signin-discord");
-
-    options.AuthorizationEndpoint = "https://discord.com/oauth2/authorize";
-    options.TokenEndpoint = "https://discord.com/api/oauth2/token";
-    options.UserInformationEndpoint = "https://discord.com/api/users/@me";
-
-    options.Scope.Add("identify");
-    options.Scope.Add("email");
-
-    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
-    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-
-    options.SaveTokens = true;
-    options.ClaimsIssuer = "Discord";
-
-    options.Events = new OAuthEvents
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
     {
-        OnCreatingTicket = async context =>
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    })
+    .AddGitHub(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:GitHub:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:GitHub:ClientSecret"];
+        options.Scope.Add("user:email");
+    })
+    .AddOAuth("Discord", options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Discord:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Discord:ClientSecret"];
+
+        options.CallbackPath = new PathString("/signin-discord");
+
+        options.AuthorizationEndpoint = "https://discord.com/oauth2/authorize";
+        options.TokenEndpoint = "https://discord.com/api/oauth2/token";
+        options.UserInformationEndpoint = "https://discord.com/api/users/@me";
+
+        options.Scope.Add("identify");
+        options.Scope.Add("email");
+
+        options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Name, "username");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+
+        options.SaveTokens = true;
+        options.ClaimsIssuer = "Discord";
+
+        options.Events = new OAuthEvents
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
+            OnCreatingTicket = async context =>
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
 
-            var response = await context.Backchannel.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+                var response = await context.Backchannel.SendAsync(request);
+                response.EnsureSuccessStatusCode();
 
-            var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-            context.RunClaimActions(user.RootElement);
-        },
+                var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+                context.RunClaimActions(user.RootElement);
+            }
+        };
+    });
 
-        OnRedirectToAuthorizationEndpoint = context =>
-        {
-            context.Response.Redirect(context.RedirectUri);
-            return Task.CompletedTask;
-        }
-    };
-});
 
 
 // Add services to the container.

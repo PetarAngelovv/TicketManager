@@ -39,7 +39,8 @@ namespace TicketManager.Web.Areas.Admin.Controllers
                         Id = e.Id,
                         Name = e.Name,
                         IsDeleted = e.IsDeleted,
-                        CategoryName = e.CategoryName ?? "Unknown"
+                        CategoryName = e.CategoryName ?? "Unknown",
+                        ImageUrl = e.ImageUrl
                     })
                     .ToList();
 

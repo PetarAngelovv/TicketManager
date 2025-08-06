@@ -2,64 +2,60 @@
 @model PaginatedEventsViewModel
 
 @{
-    ViewData["Title"] = "Welcome";
+    ViewData["Title"] = "Choose Your Adventure";
     Layout = "_Layout";
 }
 
+<head>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
 <div class="container mt-5">
 
-    <h2 class="mb-4 text-center">🎟️ All Events</h2>
+    <h2 class="mb-4 text-center text-primary">🌍 Explore & Book Your Next Adventure</h2>
 
-    <!-- Filter by Category -->
+    <label class="form-label fw-bold" for="categoryFilter">🧭 Experience Type</label>
     <select id="categoryFilter" class="form-select mb-3">
-        <option value="">All Categories</option>
+        <option value="">🌟 All Types</option>
         @foreach (var category in ViewBag.Categories as List<AddCategoryDropDownModel>)
         {
-            <option value="@category.Id">@category.Name</option>
+            <option value="@category.Id">🎯 @category.Name</option>
         }
     </select>
 
-    <!-- Search -->
-    <div class="mb-4">
-        <input type="text" id="eventSearchInput" class="form-control" placeholder="🔍 Search events..." />
-    </div>
+    <label for="eventSearchInput" class="form-label fw-bold">🔍 Find Your Dream Escape</label>
+    <input type="text" id="eventSearchInput" class="form-control mb-4" placeholder="Search thrilling experiences..." />
 
-    <!-- Results -->
     <div id="eventResults">
         @await Html.PartialAsync("EventListPartial", Model)
     </div>
 
-    <!-- Favorites Button -->
     <div class="text-center mt-4">
-        <a asp-controller="Event" asp-action="Favorites" class="btn btn-outline-danger w-100 mt-4">
-            <i class="fas fa-heart"></i>❤️ Go to Favorites
+        <a asp-controller="Event" asp-action="Favorites" class="btn btn-outline-warning w-100">
+            <i class="fas fa-star"></i> ✨ My Saved Adventures
         </a>
     </div>
 
-    <!-- Request Account Deletion Button -->
     <div class="text-center mt-4">
         <form id="deleteRequestForm" method="post">
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-danger w-100 mt-2">
-                🗑️ Request Account Deletion
+            <button type="submit" class="btn btn-dark w-100 mt-2">
+                👋 Leave the Journey (Account Deletion)
             </button>
         </form>
-
         <div id="deleteRequestMessage" class="mt-2 text-success" style="display:none;">
             ✅ Your deletion request has been sent to the admin.
         </div>
     </div>
 
-    <!-- Modal -->
     <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="eventDetailsLabel">Event Details</h5>
+                    <h5 class="modal-title" id="eventDetailsLabel">📖 Adventure Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="eventDetailsContent">
-                </div>
+                <div class="modal-body" id="eventDetailsContent"></div>
             </div>
         </div>
     </div>
@@ -69,40 +65,30 @@
     <script>
         const antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
 
-        // Save Favorite
         $(document).on("click", ".btn-save", function () {
             const button = $(this);
             const eventId = button.data("event-id");
 
-            $.ajax({
-                url: "/Event/Save",
-                method: "POST",
-                data: {
-                    id: eventId,
-                    __RequestVerificationToken: antiForgeryToken
-                },
-                success: function (response) {
-                    if (response.success) {
-                        const card = button.closest(".card");
-                        const countSpan = card.find(".favorites-count");
+            $.post("/Event/Save", {
+                id: eventId,
+                __RequestVerificationToken: antiForgeryToken
+            })
+            .done(function (response) {
+                if (response.success) {
+                    const card = button.closest(".card");
+                    const countSpan = card.find(".favorites-count");
+                    countSpan.text(parseInt(countSpan.text()) + 1);
 
-                        let count = parseInt(countSpan.text());
-                        count++;
-                        countSpan.text(count);
-
-                        button.replaceWith(`
-                            <a href="/Event/Favorites" class="btn btn-outline-danger w-100">
-                                <i class="fas fa-heart"></i> Go to Favorites
-                            </a>
-                        `);
-                    } else {
-                        alert(response.message || "Error saving event.");
-                    }
-                },
-                error: function () {
-                    alert("AJAX error.");
+                    button.replaceWith(`
+                        <a href="/Event/Favorites" class="btn btn-outline-warning w-100">
+                                              <i class="fas fa-star"></i> ✨ Go to Favorites
+                        </a>
+                    `);
+                } else {
+                    alert(response.message || "Error saving experience.");
                 }
-            });
+            })
+            .fail(() => alert("AJAX error."));
         });
 
         // Show Details
@@ -110,110 +96,91 @@
             const eventId = $(this).data("event-id");
 
             $.get("/Event/GetDetailsPartial", { id: eventId })
-                .done(function (data) {
+                .done(data => {
                     $("#eventDetailsContent").html(data);
                     new bootstrap.Modal(document.getElementById('eventDetailsModal')).show();
                 })
-                .fail(function () {
-                    $("#eventDetailsContent").html("<p class='text-danger'>Error loading details.</p>");
+                .fail(() => {
+                    $("#eventDetailsContent").html("<p class='text-danger'>Error loading adventure details.</p>");
                     new bootstrap.Modal(document.getElementById('eventDetailsModal')).show();
                 });
         });
 
         // Buy Ticket
-              $(document).on('click', '.buy-ticket-btn', function () {
+               $(document).on('click', '.buy-ticket-btn', function () {
             const eventId = $(this).data('event-id');
-            const quantityInput = $(`#ticketQuantity-${eventId}`);
-            const quantity = parseInt(quantityInput.val()) || 1;
+            const quantity = parseInt($(`#ticketQuantity-${eventId}`).val()) || 1;
 
             fetch(`/Event/Buy?id=${eventId}&quantity=${quantity}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        alert(`✅ Purchased ${quantity} ticket(s)!`);
-                        updateTicketsLeft(eventId);
-                    } else {
+                         if (data.success) {
+            alert(`🎉 You've bought ${quantity} ticket(s)!`);
+
+            const countEl = document.getElementById(`tickets-left-${eventId}`);
+            if (countEl) {
+                countEl.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
+            }
+
+            const quantityInput = $(`#ticketQuantity-${eventId}`);
+            const quantityLabel = quantityInput.prev("label");
+
+            if (data.ticketsLeft === 0) {
+                quantityInput.remove();
+                quantityLabel.remove(); 
+
+                $(this).replaceWith(`
+                    <button class="btn btn-sold-out w-100" disabled>
+                        🚫 Sold Out
+                    </button>
+                `);
+            } else {
+                quantityInput.attr("max", data.ticketsLeft);
+            }
+        }
+         else {
                         alert('❌ ' + data.message);
                     }
                 })
-                .catch(() => {
-                    alert("🚨 Something went wrong. Please try again.");
-                });
+                .catch(() => alert("🚨 Something went wrong. Please try again."));
         });
 
-
-        function updateTicketsLeft(eventId) {
-            fetch(`/Event/GetTicketsLeft?id=${eventId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const ticketsLeftElement = document.getElementById(`tickets-left-${eventId}`);
-                        if (ticketsLeftElement) {
-                            ticketsLeftElement.textContent = `🎟️ Tickets Left: ${data.ticketsLeft}`;
-                        }
-                    }
-                })
-                .catch(error => console.error('Error fetching tickets left:', error));
-        }
 
         // Account Deletion Request
         $('#deleteRequestForm').submit(function (e) {
             e.preventDefault();
+            if (!confirm("Are you sure you want to leave this adventure?")) return;
 
-            if (!confirm("Are you sure you want to request account deletion?")) return;
-
-            $.ajax({
-                url: '/User/RequestDelete',
-                type: 'POST',
-                success: function (response) {
+            $.post('/User/RequestDelete')
+                .done(response => {
                     if (response.success) {
                         $('#deleteRequestMessage').show();
                         $('#deleteRequestForm button').prop('disabled', true).text('Request Sent');
                     } else {
                         alert('❌ ' + response.message);
                     }
-                },
-                error: function () {
-                    alert('❌ Something went wrong while sending the request.');
-                }
-            });
+                })
+                .fail(() => alert('❌ Something went wrong while sending the request.'));
         });
 
-        // Load events with search, filter and page
+        // Search + Filter + Pagination
         function loadEvents(page = 1) {
-            let term = $('#eventSearchInput').val();
-            let categoryId = $('#categoryFilter').val();
+            const term = $('#eventSearchInput').val();
+            const categoryId = $('#categoryFilter').val();
 
-            $.ajax({
-                url: '/Event/Search',
-                type: 'GET',
-                data: { term: term, categoryId: categoryId, page: page },
-                success: function (result) {
-                    $('#eventResults').html(result);
-                },
-                error: function () {
-                    $('#eventResults').html('<p class="text-danger">Error loading events.</p>');
-                }
-            });
+            $.get('/Event/Search', { term, categoryId, page })
+                .done(result => $('#eventResults').html(result))
+                .fail(() => $('#eventResults').html('<p class="text-danger">Error loading experiences.</p>'));
         }
 
-        // Event handlers for search and filter
-        $('#eventSearchInput').on('keyup', function () {
-            loadEvents(1);
-        });
-        $('#categoryFilter').on('change', function () {
-            loadEvents(1);
-        });
+        $('#eventSearchInput').on('keyup', () => loadEvents(1));
+        $('#categoryFilter').on('change', () => loadEvents(1));
 
-        // Pagination (AJAX)
         $(document).on('click', '.page-link-ajax', function (e) {
             e.preventDefault();
-            let page = $(this).data('page');
-            loadEvents(page);
+            loadEvents($(this).data('page'));
         });
 
-        $(document).ready(function () {
-            loadEvents(1);
-        });
+        $(document).ready(() => loadEvents(1));
     </script>
 }

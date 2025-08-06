@@ -185,9 +185,18 @@ namespace TicketManager.Web.Controllers
             {
                 string userId = this.GetUserId()!;
 
+                // 🔄 Purchase tickets
                 await this._eventService.BuyTicketAsync(id, userId, quantity);
 
-                return Json(new { success = true });
+                // 📊 Fetch remaining tickets
+                int ticketsLeft = await this._eventService.GetTicketsLeftAsync(id);
+
+                // 🎯 Return both success and remaining count
+                return Json(new
+                {
+                    success = true,
+                    ticketsLeft = ticketsLeft
+                });
             }
             catch (InvalidOperationException ex)
             {
@@ -198,6 +207,8 @@ namespace TicketManager.Web.Controllers
                 return Json(new { success = false, message = "Something went wrong." });
             }
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetTicketsLeft(int id)

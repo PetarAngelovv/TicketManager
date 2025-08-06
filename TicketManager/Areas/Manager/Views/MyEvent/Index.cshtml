@@ -11,16 +11,20 @@
         @for (int i = 0; i < Model.Count; i++)
         {
             var _event = Model[i];
-            var extraClass = i >= 3 ? "d-none extra-event" : ""; // скриваме след 3-тия
-                                                                 <div class="col-md-4 mb-4 @extraClass">
-                                                                     <div class="card h-100">
-                                                                         <img src="@(_event.ImageUrl ?? "~/images/default-image.jpg")"
-                                                                              class="card-img-top"
-                                                                              style="max-height: 150px; object-fit: contain;" />
-                                                                         <div class="card-body d-flex flex-column">
-                                                                             <h5 class="card-title">@_event.Name</h5>
-                                                                             <p class="card-text">📂 Category: @_event.CategoryName</p>
-                                                                             <p class="card-text"><small>❤️ Favorites: @_event.SavedCount</small></p>
+            var extraClass = i >= 3 ? "d-none extra-event" : "";
+            <div class="col-md-4 mb-4 @extraClass">
+                <div class="card h-100">
+                    <img src="@( _event.ImageUrl?.StartsWith("http") == true
+                                          ? _event.ImageUrl
+                                          : Url.Content(_event.ImageUrl ?? "~/images/default-image.jpg") )"
+                     class="card-img-top"
+                     alt="Event Image"
+                     style="max-height: 150px; object-fit: contain;" />
+
+                    <div class="card-body d-flex flex-column">
+                           <h5 class="card-title">@_event.Name</h5>
+                           <p class="card-text">📂 Category: @_event.CategoryName</p>
+                           <p class="card-text"><small>❤️ Favorites: @_event.SavedCount</small></p>
 
                          <div class="d-flex justify-content-between">
                              <div class="w-50 me-1">

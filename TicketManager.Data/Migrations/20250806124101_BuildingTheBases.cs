@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -112,21 +112,24 @@ namespace TicketManager.Data.Migrations
                 table: "OrderTickets",
                 column: "OrderId",
                 principalTable: "Orders",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_OrderTickets_Tickets_TicketId",
                 table: "OrderTickets",
                 column: "TicketId",
                 principalTable: "Tickets",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Tickets_Events_EventId",
                 table: "Tickets",
                 column: "EventId",
                 principalTable: "Events",
-                principalColumn: "Id");
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
@@ -225,7 +228,7 @@ namespace TicketManager.Data.Migrations
                 column: "EventId",
                 principalTable: "Events",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Restrict);
         }
 
     }

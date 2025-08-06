@@ -18,7 +18,7 @@ namespace TicketManager.Data.Configurations
             builder.HasOne(ot => ot.Ticket)
                 .WithMany(t => t.OrderTickets)
                 .HasForeignKey(ot => ot.TicketId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

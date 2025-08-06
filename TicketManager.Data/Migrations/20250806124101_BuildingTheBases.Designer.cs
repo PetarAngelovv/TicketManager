@@ -12,7 +12,7 @@ using TicketManager.Data;
 namespace TicketManager.Data.Migrations
 {
     [DbContext(typeof(TicketManagerDbContext))]
-    [Migration("20250731143207_BuildingTheBases")]
+    [Migration("20250806124101_BuildingTheBases")]
     partial class BuildingTheBases
     {
         /// <inheritdoc />
@@ -211,15 +211,15 @@ namespace TicketManager.Data.Migrations
                         {
                             Id = "fcf6a048-50ce-4fd6-a89b-2d95c88e607a",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7ff2c1bf-e08c-4051-91e5-dd069dbc3af5",
+                            ConcurrencyStamp = "dc5dd6d6-6112-469b-8b38-e750e9f33bac",
                             Email = "admin@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TMANAGER.COM",
                             NormalizedUserName = "ADMIN@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEE8Reef5oeCQJKyrVD7oxlSibScueoLr1wnDO1vzELT32W0Tl4oekfxWRHUgJ+AThg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEChmcKx5IKYxT7BrXfVgLGPmcntumMFKedQxytnZGZbzPcIu6Ff2FCtK6yhgY8eCOQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "86d9cc00-1799-4413-8a3c-bfba31e6948c",
+                            SecurityStamp = "209c30f4-1f13-41bc-b862-a5cf915b9da9",
                             TwoFactorEnabled = false,
                             UserName = "admin@TManager.com"
                         },
@@ -227,15 +227,15 @@ namespace TicketManager.Data.Migrations
                         {
                             Id = "e14720aa-73e1-4f8f-8f1f-6736cfe1a00b",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "09e518c2-d445-45ad-9dd1-30d0167d3973",
+                            ConcurrencyStamp = "0fe5c9b6-5b19-4533-ac87-a8663c5aba9c",
                             Email = "manager@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "MANAGER@TMANAGER.COM",
                             NormalizedUserName = "MANAGER@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAulT/FvYx+shbpauM7Si/V5ojobicnfzV3QkAq86CCLPnbAygogPS036i2/fpcVkQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPf2caNfR2fps40SeFjtKUlyUZa33qiljKPZzv7FeYD2nxzsX2bnHtqqp8UW+sAQ8A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1c8bd978-ca1c-4a85-ae9e-b3339f214825",
+                            SecurityStamp = "f28fa5a6-be19-445e-89ab-ba510609d4b5",
                             TwoFactorEnabled = false,
                             UserName = "manager@TManager.com"
                         },
@@ -243,15 +243,15 @@ namespace TicketManager.Data.Migrations
                         {
                             Id = "b3102d7f-82cb-470c-88d3-a299a1e8c1b9",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "747308ac-d9b5-492f-9507-235e7d42ba41",
+                            ConcurrencyStamp = "3e4dcc9b-69c2-459a-b18a-6820b399e230",
                             Email = "user@TManager.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@TMANAGER.COM",
                             NormalizedUserName = "USER@TMANAGER.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAJIVNyJSmsR/TCHhviax6kU61a8RkaZYh+0vUxh9/eQIb04IU56qqNPSYt0LiBT4Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECJCjDERnjiVsPPaOqrEGUr5ZTRZaOr+AG4v4uo7J2bLLH66BEN3tYpkvhRhRi0B4Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6c0465fe-27c2-4880-b867-735ef50bcf3c",
+                            SecurityStamp = "7a0591ce-c946-4433-a753-53c6dea98fcd",
                             TwoFactorEnabled = false,
                             UserName = "user@TManager.com"
                         });
